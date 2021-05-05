@@ -18,7 +18,7 @@ public class BasicEnemy {
 
         if (tick % 120 == 0) {
 
-            g.makeBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 6, 270, false, false, new Dimension(24, 24), Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"));
+            g.makeBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 6, 270, 8, false, false, new Dimension(24, 24), Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"));
 
         }
         return basicBulletMap;  // returns map, as bullet might of been added
@@ -28,7 +28,7 @@ public class BasicEnemy {
 
         if (tick % 120 == 0) {
 
-            g.makeBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 6, 270, false, true, new Dimension(24, 24), Toolkit.getDefaultToolkit().getImage("images/trackBullet.jpg"));
+            g.makeBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 6, 270, 0, false, true, new Dimension(24, 24), Toolkit.getDefaultToolkit().getImage("images/trackBullet.jpg"));
 
         }
         return basicBulletMap;  // returns map, as bullet might of been added

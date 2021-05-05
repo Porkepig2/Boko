@@ -221,10 +221,10 @@ public class GamePanel extends JPanel implements ActionListener {
 
         // player attacks
         if (attackButton && tick % 5 == 0) {
-            makeBullet(posX, posY, 6000, 10, 90, true, false, new Dimension(32, 32), Toolkit.getDefaultToolkit().getImage("images/friendlyBullet.jpg"));
+            makeBullet(posX, posY, 6000, 10, 90, 0, true, false, new Dimension(32, 32), Toolkit.getDefaultToolkit().getImage("images/friendlyBullet.jpg"));
         }
         if (attackButton && tick % 25 == 0 && basicEnemyMap.values().toArray().length > 0) {
-            makeBullet(posX, posY, 3000, 16, 90, true, true, new Dimension(40, 40), Toolkit.getDefaultToolkit().getImage("images/friendlyBullet.jpg"));
+            makeBullet(posX, posY, 3000, 16, 90, 0, true, true, new Dimension(40, 40), Toolkit.getDefaultToolkit().getImage("images/friendlyBullet.jpg"));
         }
 
         updateEnemies();
@@ -248,7 +248,7 @@ public class GamePanel extends JPanel implements ActionListener {
         NextEnemyID++;
     }
 
-    public void makeBullet(double x, double y, long lifespan, int speed, double trajectory, boolean friendly, boolean track, Dimension hitbox, Image image) {
+    public void makeBullet(double x, double y, long lifespan, int speed, double trajectory, double curve, boolean friendly, boolean track, Dimension hitbox, Image image) {
         BasicBullet b = new BasicBullet();
         b.x = x;
         b.y = y;
@@ -258,6 +258,7 @@ public class GamePanel extends JPanel implements ActionListener {
         b.death = current + lifespan;
         b.speed = speed;
         b.trajectory = Math.toRadians(trajectory);
+        b.curve = Math.toRadians(curve/10);
         b.hitbox = hitbox;
         b.image = image;
         b.friendly = friendly;

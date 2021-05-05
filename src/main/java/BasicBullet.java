@@ -11,6 +11,7 @@ public class BasicBullet {
     long death; // if bullet dies?
     int speed;  // speed
     double trajectory; //  angle in radians on which direction the bullet is shooting
+    double curve; // curves trajectory (in 1/10 degrees: 10 = 1degree, -450 = -45 degrees
     boolean friendly;   // if the bullet is friendly to us or not (ex, our bullets)
     boolean track;  // if the bullet tracks a target
     Dimension hitbox;   // hitbox of bullet
@@ -19,6 +20,7 @@ public class BasicBullet {
     public void MoveBullet(double pX, double pY, Dimension pH, GamePanel g) {   // moves the bullet
 
 
+        trajectory += curve;
 
         if (track && (!friendly || g.basicEnemyMap.values().toArray().length > 0)) {
 
