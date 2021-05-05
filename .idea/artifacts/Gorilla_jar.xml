@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Gorilla:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Gorilla_jar</output-path>
+    <root id="archive" name="Gorilla.jar">
+      <element id="module-output" name="Gorilla" />
+    </root>
+  </artifact>
+</component>
