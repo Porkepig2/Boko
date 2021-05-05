@@ -1,3 +1,15 @@
+/*
+This class deals with:
+
+All the drawing
+Character aspects
+frame count
+all scenes (menu, lv1)
+key input
+updating bullet & enemy classes
+
+ */
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -14,53 +26,50 @@ import java.util.*;
 public class GamePanel extends JPanel implements ActionListener {
 
     //static
-    static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
-    static final int SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height-25;
-    static final int UNIT_SIZE = 50;
-    static final int DELAY = 16;
+    static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;      // gets any screen width
+    static final int SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height-25; // gets any screen height
+    static final int UNIT_SIZE = 50;    // determines one unit, used for player size
+    static final int DELAY = 16;    // delay between frames. 16ms = ~60fps
 
     //changable stats
-    int PLAYER_SPEED;
+    int PLAYER_SPEED;   // player speed
 
     //images
-    Image menuImage;
-    Image backgroundImage;
-    Image characterImage;
+    Image menuImage;        // main menu image
+    Image backgroundImage;  // level 1 background
+    Image characterImage;   // character image
 
 
     //sounds
-    File menuMusic;
+    File menuMusic;         // menu music
     Clip menuClip;
 
 
     //main
-    int posX;
-    int posY;
-    Dimension playerHitbox;
-    int mouseX;
-    int mouseY;
-    boolean mainmenu;
-    boolean level1;
-    Timer timer;
+    int posX;   // character x
+    int posY;   // character y
+    Dimension playerHitbox; // player hitbox in dimension (width, height)
+    int mouseX; // mouse x position
+    int mouseY; // mouse y position
+    boolean mainmenu;   // game state menu
+    boolean level1;     // game state lv1
+    Timer timer;    // timer for everything (with the DELAY from above)
     Random random;
-    boolean movingL;
-    boolean movingR;
-    boolean movingU;
-    boolean movingD;
-    boolean attackButton;
-    boolean mousePressed;
-    long levelStartTime;
-    long currentTime;
-    int whichBulletToSpawn;
-    int levelItemSpawner;
-    long tick;
-    Map<Integer, BasicBullet> basicBulletMap = new HashMap<>();
-    Map<Integer, BasicEnemy> basicEnemyMap = new HashMap<>();
+    boolean movingL;    // moving left
+    boolean movingR;    // moving right
+    boolean movingU;    // moving up
+    boolean movingD;    // moving down
+    boolean attackButton;   // if pressing attack button
+    boolean mousePressed;   // if mouse was pressed
+    long tick;              // goes up by 1 every DELAY time passed, 16ms = 60 times a second
 
-    DecimalFormat numberFormat = new DecimalFormat("#.00");
+    Map<Integer, BasicBullet> basicBulletMap = new HashMap<>(); // holds all bullets on screen in a hashmap
+    Map<Integer, BasicEnemy> basicEnemyMap = new HashMap<>();   // holds all enemies on screen in a hashmap
+
+    DecimalFormat numberFormat = new DecimalFormat("#.00"); // if used, will lock decimals to 2 decimal place
 
 
-    public void refreshStats() {
+    public void refreshStats() {    // refreshes all changeable variables
 
         //changable stats
         PLAYER_SPEED = 8;
@@ -85,14 +94,10 @@ public class GamePanel extends JPanel implements ActionListener {
         movingU = false;
         movingD = false;
         mousePressed = false;
-        levelStartTime = 0;
-        currentTime = 0;
-        whichBulletToSpawn = 0;
-        levelItemSpawner = 0;
         tick = 0;
     }
 
-    GamePanel() {
+    GamePanel() {   // deals with odd stuff
         random = new Random();
         this.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
         this.setBackground(Color.BLACK);
@@ -102,15 +107,15 @@ public class GamePanel extends JPanel implements ActionListener {
         startGame();
     }
 
-    public void startGame() {
+    public void startGame() {   // sets up game for the first time
 
-        timer = new Timer(DELAY, this);
+        timer = new Timer(DELAY, this); // create the timer
         timer.start();
 
-        refreshStats();
-        setupMusic();
+        refreshStats(); // reset all variables
+        setupMusic();   // sets up music
 
-        try {
+        try {   // sets up one-time font setupper (changeable with one line after this)
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Dirty Roma.otf")).deriveFont(120f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(customFont);
@@ -146,7 +151,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void draw(Graphics g) {
 
-        if (mainmenu) {
+        if (mainmenu) { // everything in main menu scene
 
             g.setColor(Color.WHITE);
             g.drawImage(menuImage,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,this);
@@ -154,8 +159,7 @@ public class GamePanel extends JPanel implements ActionListener {
             //g.setFont( new Font("Dirty Roma",Font.PLAIN, 170));
             //g.drawString("START", 120, 650);
 
-
-        } else if (level1) {
+        } else if (level1) {    // everything in level1 scene
 
             g.drawImage(backgroundImage,0,0, SCREEN_WIDTH,SCREEN_HEIGHT, this);
             g.drawImage(characterImage,posX,posY, playerHitbox.width,playerHitbox.height, this);
@@ -173,7 +177,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
 
 
-    public void checkClickLocation() {
+    public void checkClickLocation() {  // runs if player clicked, and checks if that click affects anything
 
         if (mainmenu) {
 
@@ -181,9 +185,6 @@ public class GamePanel extends JPanel implements ActionListener {
 
                 mainmenu = false;
                 level1 = true;
-                levelStartTime = System.currentTimeMillis();
-                levelItemSpawner = 3000;
-                whichBulletToSpawn = 1;
             }
         }
 
@@ -191,7 +192,7 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {    // runs every time the timer finished (16ms = 60 times a second)
 
         if (mainmenu) {
             mainMenu();
@@ -205,27 +206,20 @@ public class GamePanel extends JPanel implements ActionListener {
             checkClickLocation();
         }
 
-        repaint();
+        repaint();  // draws screen again
 
     }
 
     public void level1() {
 
-
-        currentTime = System.currentTimeMillis();
-
-        /*if (tick % 60 == 0) {
-            makeBullet(((int) (Math.random() * 1900)), 0, 4000, 6, 270, false, false, new Dimension(24,24),getToolkit().getImage("images/basicBullet.jpg"));
-        } else if (tick % 60 == 30) {
-            makeBullet(((int) (Math.random() * 1900)), 0, 10000, 2, 270, false, true, new Dimension(24,24),getToolkit().getImage("images/trackBullet.jpg"));
-        }*/
-
-        if (tick % 600 == 0) {
+        // occasionally spawn enemies (method subject to change)
+        if (tick % 600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
             makeEnemy(((int) (Math.random() * 1900)), 0, false, "basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
         } else if (tick % 800 == 0) {
             makeEnemy(((int) (Math.random() * 1900)), 0, false, "track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         }
 
+        // player attacks
         if (attackButton && tick % 5 == 0) {
             makeBullet(posX, posY, 6000, 10, 90, true, false, new Dimension(32, 32), Toolkit.getDefaultToolkit().getImage("images/friendlyBullet.jpg"));
         }
@@ -238,7 +232,7 @@ public class GamePanel extends JPanel implements ActionListener {
         tick++;
     }
 
-    private static Integer NextBulletID = 1;
+    private static Integer NextBulletID = 1;    // makes sure we don't overwrite a bullet or enemy in the map, increments by 1 everytime we add one in
     private static Integer NextEnemyID = 1;
 
     public void makeEnemy(double x, double y, boolean dead, String name, Dimension hitbox, Image image) {
@@ -273,7 +267,7 @@ public class GamePanel extends JPanel implements ActionListener {
         NextBulletID++;
     }
 
-    public boolean isHit(BasicBullet b, double targetX, double targetY, Dimension targetD) {
+    public boolean isHit(BasicBullet b, double targetX, double targetY, Dimension targetD) {    // checks if a bullet hits a target
 
         return ((b.x >= targetX && b.x <= targetX + targetD.width) || (b.x + b.hitbox.width >= targetX && b.x + b.hitbox.width <= targetX + targetD.width)) &&
                 ((b.y >= targetY && b.y <= targetY + targetD.height) || (b.y + b.hitbox.height >= targetY && b.y + b.hitbox.height <= targetY + targetD.height));
@@ -281,6 +275,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void updateEnemies () {
 
+        // iterate through every enemy in map, update them
         Iterator<Map.Entry<Integer, BasicEnemy>> iterator = basicEnemyMap.entrySet().iterator();
 
         while (iterator.hasNext()) {
@@ -303,8 +298,9 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void updateBullets () {
 
-        long current = System.currentTimeMillis();
+        long current = System.currentTimeMillis();  // for checking if bullet lifespan is up
 
+        // iterate through all bullets, update them
         Iterator<Map.Entry<Integer, BasicBullet>> iterator = basicBulletMap.entrySet().iterator();
 
         while (iterator.hasNext()) {
@@ -313,7 +309,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
             BasicBullet b = entry.getValue();
 
-            if (b.friendly) {
+            if (b.friendly) {   // if we shot the bullets or if they're friendly to us, check if that bullet hit any enemies
                 Iterator<Map.Entry<Integer, BasicEnemy>> iterator2 = basicEnemyMap.entrySet().iterator();
 
                 while (iterator2.hasNext()) {
@@ -347,7 +343,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    public void move() {
+    public void move() {    // simple movement system
 
         if (movingL) {  // move player horizontally
             posX = posX - PLAYER_SPEED;
@@ -379,7 +375,7 @@ public class GamePanel extends JPanel implements ActionListener {
     public class MyMouseAdapter extends MouseAdapter {
 
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(MouseEvent e) {    // if player presses the mouse button
             mouseX = e.getX();
             mouseY = e.getY();
             mousePressed = true;
@@ -389,7 +385,7 @@ public class GamePanel extends JPanel implements ActionListener {
     public class MyKeyAdapter extends KeyAdapter {
 
         @Override
-        public void keyReleased(KeyEvent e) {
+        public void keyReleased(KeyEvent e) {   // if player releases specific keys
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
                 case KeyEvent.VK_A:
@@ -414,7 +410,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         @Override
-        public void keyPressed(KeyEvent e) {
+        public void keyPressed(KeyEvent e) {    // if player presses specific keys
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
                 case KeyEvent.VK_A:

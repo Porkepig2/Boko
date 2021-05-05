@@ -1,18 +1,22 @@
+/*
+This class is created for every bullet on screen.
+ */
+
 import java.awt.*;
 
 public class BasicBullet {
 
-    double x;
-    double y;
-    long death;
-    int speed;
+    double x;   // x position
+    double y;   // y position
+    long death; // if bullet dies?
+    int speed;  // speed
     double trajectory; //  angle in radians on which direction the bullet is shooting
-    boolean friendly;
-    boolean track;
-    Dimension hitbox;
-    Image image;
+    boolean friendly;   // if the bullet is friendly to us or not (ex, our bullets)
+    boolean track;  // if the bullet tracks a target
+    Dimension hitbox;   // hitbox of bullet
+    Image image;    // bullet image
 
-    public void MoveBullet(double pX, double pY, Dimension pH, GamePanel g) {
+    public void MoveBullet(double pX, double pY, Dimension pH, GamePanel g) {   // moves the bullet
 
 
 
