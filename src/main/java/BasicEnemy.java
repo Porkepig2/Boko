@@ -9,6 +9,8 @@ public class BasicEnemy {
 
     double x;   // x position
     double y;   // y position
+    int health; // health
+    int totalHealth;    // total health (constant, for healthbar)
     boolean dead;  // if enemy gets shot (adding health in future)
     String name;   // enemy name
     Dimension hitbox;   // hitbox
@@ -18,7 +20,7 @@ public class BasicEnemy {
 
         if (tick % 120 == 0) {
 
-            g.makeBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 6, 270, 8, false, false, new Dimension(24, 24), Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"));
+            new BasicBullet().addBasicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000,  Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"), g);
 
         }
         return basicBulletMap;  // returns map, as bullet might of been added
@@ -28,7 +30,7 @@ public class BasicEnemy {
 
         if (tick % 120 == 0) {
 
-            g.makeBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 6, 270, 0, false, true, new Dimension(24, 24), Toolkit.getDefaultToolkit().getImage("images/trackBullet.jpg"));
+            new BasicBullet().addTrackBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 6, true, Toolkit.getDefaultToolkit().getImage("images/trackBullet.jpg"), g);
 
         }
         return basicBulletMap;  // returns map, as bullet might of been added
