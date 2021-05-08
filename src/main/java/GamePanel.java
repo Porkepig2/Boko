@@ -235,7 +235,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
         // player attacks
         if (attackButton && tick % 5 == 0) {
-            new BasicBullet().addFriendlyBasicBullet(posX, posY, 6000, 10, 90,  true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
+            new BasicBullet().addFriendlyBasicBullet(posX, posY, 2000, 10, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
         }
 
         if (attackButton && tick % 20 == 0 && basicEnemyMap.values().toArray().length > 0) {
@@ -322,7 +322,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     BasicEnemy e = entry2.getValue();
 
                     boolean hit;
-                    hit = isHit(b, e.x,e.y,e.hitbox);
+                    hit = isHit(b, e.x, e.y, e.hitbox);
 
                     if (hit) {
                         e.health -= b.damage;
@@ -330,44 +330,40 @@ public class GamePanel extends JPanel implements ActionListener {
                             e.dead = true;
                         }
 
-                        try {
-                            iterator.remove();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
+                            b.death = 0;
                     }
 
                     if (e.dead) {    // kill enemy
                         iterator2.remove();
                     }
                 }
+
+                if (b.death < current) {
+                    iterator.remove();
+                }
             } else {
                 boolean hit;
-                hit = isHit(b, posX,posY,playerHitbox);
+                hit = isHit(b, posX, posY, playerHitbox);
 
-                if (hit) {
-                   playerHealth = playerHealth - b.damage;
-                   if (playerHealth <= 0) {
-                       playerDead = true;
-                   }
+                if (hit || b.death < current) {
+                    playerHealth = playerHealth - b.damage;
+                    if (playerHealth <= 0) {
+                        playerDead = true;
+                    }
                     iterator.remove();
                 }
 
-                if (playerDead) {    // kill enemy
+                if (playerDead) {
+                    // kill player
                 }
             }
+            if (b.friendly && basicEnemyMap.values().toArray().length > 0) {
 
-            if (b.death < current) {    // kill bullet
-                iterator.remove();
-            } else {    // if bullet is still alive
-                if (b.friendly && basicEnemyMap.values().toArray().length > 0) {
+                BasicEnemy e = (BasicEnemy) basicEnemyMap.values().toArray()[0];
 
-                    BasicEnemy e = (BasicEnemy) basicEnemyMap.values().toArray()[0];
-
-                    b.MoveBullet(e.x, e.y, e.hitbox, this);
-                } else {
-                    b.MoveBullet(posX, posY, playerHitbox, this);
-                }
+                b.MoveBullet(e.x, e.y, e.hitbox, this);
+            } else {
+                b.MoveBullet(posX, posY, playerHitbox, this);
             }
         }
     }
