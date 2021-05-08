@@ -11,8 +11,11 @@ public class BasicBullet {
     long death = 10000; // if bullet dies?
     int speed = 5;  // speed
     int damage = 5;
-    double sinCounter;
-    boolean sin = false;
+    double generalCounter;  // counts to change nature of some bullets
+    double period = .2;
+    double amplitude = 1;
+    boolean cos = false;
+    boolean pulse = false;
     double trajectory = Math.toRadians(270); //  angle in radians on which direction the bullet is shooting
     double curve = 0; // curves trajectory (in 1/10 degrees: 10 = 1degree, -450 = -45 degrees
     boolean friendly = false;   // if the bullet is friendly to us or not (ex, our bullets)
@@ -44,19 +47,25 @@ public class BasicBullet {
         } else if (track && friendly && g.basicEnemyMap.values().toArray().length == 0) {
             x = x + (speed * (Math.cos(trajectory)));
             y = y + (speed * (Math.sin(trajectory)));
-        } else if (sin){
+        } else if (cos){
 
-            trajectory = Math.sin(sinCounter)*360;
-            x = x + (speed * (Math.cos(trajectory)));
+            x = x + (speed * ((Math.cos(trajectory)+(amplitude*Math.cos(generalCounter)))));
             y = y + -(speed * (Math.sin(trajectory)));
-            sinCounter+= 0.0001;
+            generalCounter+= period;
+
+        } else if (pulse) {
+
+            x = x + (speed * (Math.cos(trajectory)));
+            y = y + -(speed * (Math.sin(trajectory)+(amplitude*Math.cos(generalCounter))));
+            generalCounter+= period;
+
         } else {
             x = x + (speed * (Math.cos(trajectory)));
             y = y + -(speed * (Math.sin(trajectory)));
         }
     }
 
-    public void addFriendlyBasicBullet(double x, double y, long lifespan, int speed, double trajectory, boolean sin, boolean friendly, Image image, GamePanel g) {
+    public void addFriendlyBasicBullet(double x, double y, long lifespan, int speed, double trajectory, boolean pulse, boolean friendly, Image image, GamePanel g) {
 
         BasicBullet b = new BasicBullet();
         b.x = x;
@@ -66,7 +75,7 @@ public class BasicBullet {
 
         b.death = current + lifespan;
         b.speed = speed;
-        b.sin = sin;
+        b.pulse = pulse;
         b.trajectory = Math.toRadians(trajectory);
         b.friendly = friendly;
         b.hitbox = hitbox;

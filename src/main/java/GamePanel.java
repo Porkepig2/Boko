@@ -235,7 +235,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
         // player attacks
         if (attackButton && tick % 5 == 0) {
-            new BasicBullet().addFriendlyBasicBullet(posX, posY, 2000, 10, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
+            new BasicBullet().addFriendlyBasicBullet(posX, posY, 8000, 4, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
         }
 
         if (attackButton && tick % 20 == 0 && basicEnemyMap.values().toArray().length > 0) {
