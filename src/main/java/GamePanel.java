@@ -48,6 +48,9 @@ public class GamePanel extends JPanel implements ActionListener {
     //main
     int posX;   // character x
     int posY;   // character y
+    int playerHealth; // player health
+    int playerTotalHealth;  // for healthbar
+    boolean playerDead; // if player died
     Dimension playerHitbox; // player hitbox in dimension (width, height)
     int mouseX; // mouse x position
     int mouseY; // mouse y position
@@ -86,6 +89,9 @@ public class GamePanel extends JPanel implements ActionListener {
         //main
         posX = UNIT_SIZE*10;
         posY = UNIT_SIZE*12;
+        playerHealth = 25;
+        playerTotalHealth = playerHealth;
+        playerDead = false;
         playerHitbox = new Dimension (UNIT_SIZE, UNIT_SIZE);
         level1 = false;
         mainmenu = true;
@@ -161,14 +167,22 @@ public class GamePanel extends JPanel implements ActionListener {
 
         } else if (level1) {    // everything in level1 scene
 
-            g.drawImage(backgroundImage,0,0, SCREEN_WIDTH,SCREEN_HEIGHT, this);
+            //g.drawImage(backgroundImage,0,0, SCREEN_WIDTH,SCREEN_HEIGHT, this);
             g.drawImage(characterImage,posX,posY, playerHitbox.width,playerHitbox.height, this);
+            g.setColor(Color.WHITE);
+            g.fillRect(posX,posY-25,playerHitbox.width, 20);
+            g.setColor(Color.RED);
+            g.fillRect(posX,posY-23,(int)(((double)playerHealth/playerTotalHealth)*playerHitbox.width), 16);
 
            for (BasicBullet b : basicBulletMap.values()) {
                g.drawImage(b.image,(int)b.x,(int)b.y,b.hitbox.width,b.hitbox.height,this);
            }
             for (BasicEnemy e : basicEnemyMap.values()) {
                 g.drawImage(e.image,(int)e.x,(int)e.y,e.hitbox.width,e.hitbox.height,this);
+                g.setColor(Color.WHITE);
+                g.fillRect((int)e.x,(int)e.y-25,e.hitbox.width, 20);
+                g.setColor(Color.RED);
+                g.fillRect((int)e.x+2,(int)e.y-23,(int)(((double)e.health/e.totalHealth)*e.hitbox.width), 16);
             }
         }
 
@@ -213,18 +227,19 @@ public class GamePanel extends JPanel implements ActionListener {
     public void level1() {
 
         // occasionally spawn enemies (method subject to change)
-        if (tick % 600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
-            makeEnemy(((int) (Math.random() * 1900)), 0, false, "basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
-        } else if (tick % 800 == 0) {
-            makeEnemy(((int) (Math.random() * 1900)), 0, false, "track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
+        if (tick % 60 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
+            makeEnemy(((int) (Math.random() * 1900)), 50, 100,false, "basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
+        } else if (tick % 80 == 0) {
+            makeEnemy(((int) (Math.random() * 1900)), 50, 500,false, "track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         }
 
         // player attacks
         if (attackButton && tick % 5 == 0) {
-            makeBullet(posX, posY, 6000, 10, 90, 0, true, false, new Dimension(32, 32), Toolkit.getDefaultToolkit().getImage("images/friendlyBullet.jpg"));
+            new BasicBullet().addFriendlyBasicBullet(posX, posY, 6000, 10, 90,  true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
         }
-        if (attackButton && tick % 25 == 0 && basicEnemyMap.values().toArray().length > 0) {
-            makeBullet(posX, posY, 3000, 16, 90, 0, true, true, new Dimension(40, 40), Toolkit.getDefaultToolkit().getImage("images/friendlyBullet.jpg"));
+
+        if (attackButton && tick % 20 == 0 && basicEnemyMap.values().toArray().length > 0) {
+            new BasicBullet().addFriendlyTrackBullet(posX, posY, 4000, 14, 20,90,  true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
         }
 
         updateEnemies();
@@ -235,10 +250,12 @@ public class GamePanel extends JPanel implements ActionListener {
     private static Integer NextBulletID = 1;    // makes sure we don't overwrite a bullet or enemy in the map, increments by 1 everytime we add one in
     private static Integer NextEnemyID = 1;
 
-    public void makeEnemy(double x, double y, boolean dead, String name, Dimension hitbox, Image image) {
+    public void makeEnemy(double x, double y, int health, boolean dead, String name, Dimension hitbox, Image image) {
         BasicEnemy e = new BasicEnemy();
         e.x = x;
         e.y = y;
+        e.health = health;
+        e.totalHealth = health;
         e.dead = dead;
         e.name = name;
         e.hitbox = hitbox;
@@ -248,22 +265,7 @@ public class GamePanel extends JPanel implements ActionListener {
         NextEnemyID++;
     }
 
-    public void makeBullet(double x, double y, long lifespan, int speed, double trajectory, double curve, boolean friendly, boolean track, Dimension hitbox, Image image) {
-        BasicBullet b = new BasicBullet();
-        b.x = x;
-        b.y = y;
-
-        long current = System.currentTimeMillis();
-
-        b.death = current + lifespan;
-        b.speed = speed;
-        b.trajectory = Math.toRadians(trajectory);
-        b.curve = Math.toRadians(curve/10);
-        b.hitbox = hitbox;
-        b.image = image;
-        b.friendly = friendly;
-        b.track = track;
-
+    public void addBulletToMap(BasicBullet b) {
         basicBulletMap.put(NextBulletID, b);
         NextBulletID++;
     }
@@ -319,14 +321,41 @@ public class GamePanel extends JPanel implements ActionListener {
 
                     BasicEnemy e = entry2.getValue();
 
-                    e.dead = isHit(b, e.x,e.y,e.hitbox);
+                    boolean hit;
+                    hit = isHit(b, e.x,e.y,e.hitbox);
 
+                    if (hit) {
+                        e.health -= b.damage;
+                        if (e.health <= 0) {
+                            e.dead = true;
+                        }
+
+                        try {
+                            iterator.remove();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
 
                     if (e.dead) {    // kill enemy
                         iterator2.remove();
                     }
                 }
-            }   //  checks friendly bullet on enemy collision
+            } else {
+                boolean hit;
+                hit = isHit(b, posX,posY,playerHitbox);
+
+                if (hit) {
+                   playerHealth = playerHealth - b.damage;
+                   if (playerHealth <= 0) {
+                       playerDead = true;
+                   }
+                    iterator.remove();
+                }
+
+                if (playerDead) {    // kill enemy
+                }
+            }
 
             if (b.death < current) {    // kill bullet
                 iterator.remove();
@@ -339,7 +368,6 @@ public class GamePanel extends JPanel implements ActionListener {
                 } else {
                     b.MoveBullet(posX, posY, playerHitbox, this);
                 }
-                System.out.println(b.trajectory);
             }
         }
     }
