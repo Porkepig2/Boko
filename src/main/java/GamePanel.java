@@ -227,19 +227,22 @@ public class GamePanel extends JPanel implements ActionListener {
     public void level1() {
 
         // occasionally spawn enemies (method subject to change)
-        if (tick % 60 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
+        if (tick % 600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
             makeEnemy(((int) (Math.random() * 1900)), 50, 100,false, "basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
-        } else if (tick % 80 == 0) {
+        } else if (tick % 800 == 0) {
             makeEnemy(((int) (Math.random() * 1900)), 50, 500,false, "track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
+        }
+        if (tick == 1000) {
+            makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"));
         }
 
         // player attacks
         if (attackButton && tick % 5 == 0) {
-            new BasicBullet().addFriendlyBasicBullet(posX, posY, 8000, 4, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
+            new BasicBullet().friendlyBasicBullet(posX, posY, 8000, 4, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
         }
 
         if (attackButton && tick % 20 == 0 && basicEnemyMap.values().toArray().length > 0) {
-            new BasicBullet().addFriendlyTrackBullet(posX, posY, 4000, 14, 20,90,  true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
+            new BasicBullet().friendlyTrackBullet(posX, posY, 4000, 14, 20,100,  true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
         }
 
         updateEnemies();
@@ -294,6 +297,8 @@ public class GamePanel extends JPanel implements ActionListener {
                     basicBulletMap = e.basic(tick, basicBulletMap, this);
                 } else if (e.name.equalsIgnoreCase("track")) {
                     basicBulletMap = e.track(tick, basicBulletMap, this);
+                } else if (e.name.equalsIgnoreCase("boss")) {
+                    basicBulletMap = e.boss(tick, basicBulletMap, this);
                 }
             }
         }

@@ -11,6 +11,7 @@ public class BasicBullet {
     long death = 10000; // if bullet dies?
     int speed = 5;  // speed
     int damage = 5;
+    int trackCutoff = 0;
     double generalCounter;  // counts to change nature of some bullets
     double period = .2;
     double amplitude = 1;
@@ -37,10 +38,12 @@ public class BasicBullet {
             double posY = (pY+(double)pH.height/2);
             double distanceBetween = Math.abs((pX-(x))) + Math.abs(pY-(y));
 
-            movementX = ((posX-x) / distanceBetween);
-            movementY = ((posY-y) / distanceBetween);
+            if (distanceBetween > trackCutoff) {
+                movementX = ((posX - x) / distanceBetween);
+                movementY = ((posY - y) / distanceBetween);
 
-            trajectory = Math.atan2(movementY, movementX);
+               trajectory = Math.atan2(movementY, movementX);
+            }
 
             x = x + (speed * (Math.cos(trajectory)));
             y = y + (speed * (Math.sin(trajectory)));
@@ -65,7 +68,7 @@ public class BasicBullet {
         }
     }
 
-    public void addFriendlyBasicBullet(double x, double y, long lifespan, int speed, double trajectory, boolean pulse, boolean friendly, Image image, GamePanel g) {
+    public void friendlyBasicBullet(double x, double y, long lifespan, int speed, double trajectory, boolean pulse, boolean friendly, Image image, GamePanel g) {
 
         BasicBullet b = new BasicBullet();
         b.x = x;
@@ -85,7 +88,7 @@ public class BasicBullet {
 
     }
 
-    public void addFriendlyTrackBullet(double x, double y, long lifespan, int speed, int damage, double trajectory, boolean friendly, boolean track, Image image, GamePanel g) {
+    public void friendlyTrackBullet(double x, double y, long lifespan, int speed, int damage, int trackCutoff, boolean friendly, boolean track, Image image, GamePanel g) {
 
         BasicBullet b = new BasicBullet();
         b.x = x;
@@ -96,7 +99,7 @@ public class BasicBullet {
         b.death = current + lifespan;
         b.speed = speed;
         b.damage = damage;
-        b.trajectory = Math.toRadians(trajectory);
+        b.trackCutoff = trackCutoff;
         b.friendly = friendly;
         b.track = track;
         b.hitbox = hitbox;
@@ -106,11 +109,13 @@ public class BasicBullet {
 
     }
 
-    public void addBasicBullet(double x, double y, long lifespan, Image image, GamePanel g) {
+    public void basicBullet(double x, double y, long lifespan, int speed, double trajectory, Image image, GamePanel g) {
 
         BasicBullet b = new BasicBullet();
         b.x = x;
         b.y = y;
+        b.speed = speed;
+        b.trajectory = Math.toRadians(trajectory);
 
         long current = System.currentTimeMillis();
 
@@ -122,7 +127,7 @@ public class BasicBullet {
 
     }
 
-    public void addTrackBullet(double x, double y, long lifespan, int speed, boolean track, Image image, GamePanel g) {
+    public void trackBullet(double x, double y, long lifespan, int speed, int trackCutoff, boolean track, Image image, GamePanel g) {
 
         BasicBullet b = new BasicBullet();
         b.x = x;
@@ -132,7 +137,30 @@ public class BasicBullet {
 
         b.death = current + lifespan;
         b.speed = speed;
+        b.trajectory = Math.toRadians(90);
+        b.trackCutoff = trackCutoff;
         b.track = track;
+        b.hitbox = hitbox;
+        b.image = image;
+
+        g.addBulletToMap(b);
+
+    }
+
+    public void pulseBullet(double x, double y, long lifespan, int speed, double trajectory, double amplitude, double period, boolean pulse, Image image, GamePanel g) {
+
+        BasicBullet b = new BasicBullet();
+        b.x = x;
+        b.y = y;
+
+        long current = System.currentTimeMillis();
+
+        b.death = current + lifespan;
+        b.speed = speed;
+        b.trajectory = Math.toRadians(trajectory);
+        b.pulse = pulse;
+        b.amplitude = amplitude;
+        b.period = period;
         b.hitbox = hitbox;
         b.image = image;
 
