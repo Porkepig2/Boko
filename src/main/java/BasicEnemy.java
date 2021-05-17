@@ -22,7 +22,7 @@ public class BasicEnemy {
 
         if (tick % 120 == 0) {
 
-            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8, 270,  Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8, 90,  Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"), g);
 
         }
         return basicBulletMap;  // returns map, as bullet might of been added
@@ -41,7 +41,7 @@ public class BasicEnemy {
     public Map<Integer, BasicBullet> boss(long tick, Map<Integer, BasicBullet> basicBulletMap, GamePanel g) {  // for enemy named this
 
         x = x + movementDirection;
-        y = y + Math.cos(cosCounter);
+        y = y + 5*Math.cos(cosCounter);
 
         if (x < 100) {
             movementDirection = 4;

@@ -10,12 +10,16 @@ updating bullet & enemy classes
 
  */
 
+import javafx.scene.effect.Glow;
+import javafx.scene.image.ImageView;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.text.Element;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -65,6 +69,7 @@ public class GamePanel extends JPanel implements ActionListener {
     boolean attackButton;   // if pressing attack button
     boolean mousePressed;   // if mouse was pressed
     long tick;              // goes up by 1 every DELAY time passed, 16ms = 60 times a second
+    int TEMPBULLETCHECK;
 
     Map<Integer, BasicBullet> basicBulletMap = new HashMap<>(); // holds all bullets on screen in a hashmap
     Map<Integer, BasicEnemy> basicEnemyMap = new HashMap<>();   // holds all enemies on screen in a hashmap
@@ -101,6 +106,7 @@ public class GamePanel extends JPanel implements ActionListener {
         movingD = false;
         mousePressed = false;
         tick = 0;
+        TEMPBULLETCHECK = 0;
     }
 
     GamePanel() {   // deals with odd stuff
@@ -167,6 +173,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
         } else if (level1) {    // everything in level1 scene
 
+
             //g.drawImage(backgroundImage,0,0, SCREEN_WIDTH,SCREEN_HEIGHT, this);
             g.drawImage(characterImage,posX,posY, playerHitbox.width,playerHitbox.height, this);
             g.setColor(Color.WHITE);
@@ -230,19 +237,37 @@ public class GamePanel extends JPanel implements ActionListener {
         if (tick % 600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
             makeEnemy(((int) (Math.random() * 1900)), 50, 100,false, "basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
         } else if (tick % 800 == 0) {
-            makeEnemy(((int) (Math.random() * 1900)), 50, 500,false, "track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
+           makeEnemy(((int) (Math.random() * 1900)), 50, 500,false, "track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         }
-        if (tick == 1000) {
-            makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"));
+        if (tick % 2 == 0) {
+           makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"));
         }
 
         // player attacks
-        if (attackButton && tick % 5 == 0) {
-            new BasicBullet().friendlyBasicBullet(posX, posY, 8000, 4, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
+        if (attackButton && tick % 20 == 0) {
+            //  new BasicBullet().friendlyBasicBullet(posX, posY, 8000, 4, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
+
+            switch (TEMPBULLETCHECK) {
+                case 0:
+                    new BasicBullet().EverythingBullet(posX, posY, 4000, 5, 200, 0, .2, 5, 270, 0, true, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    break;
+                case 1:
+                    new BasicBullet().EverythingBullet(posX, posY, 4000, 5, 10, 0, .2, 4, 270, 0, true, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    break;
+                case 2:
+                    new BasicBullet().EverythingBullet(posX, posY, 4000, 5, 10, 0, .05, 2, 270, 0, false, true, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    break;
+                case 3:
+                    new BasicBullet().EverythingBullet(posX, posY, 40000, 1, 10, 0, 1, 1, 270, .1, false, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    break;
+                case 4:
+                    new BasicBullet().EverythingBullet(posX, posY, 40000, 5, 10, 0, .2, 1, 270, 0, true, true, true, true, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    break;
+            }
         }
 
         if (attackButton && tick % 20 == 0 && basicEnemyMap.values().toArray().length > 0) {
-            new BasicBullet().friendlyTrackBullet(posX, posY, 4000, 14, 20,100,  true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
+         // new BasicBullet().friendlyTrackBullet(posX, posY, 4000, 14, 20,100,  true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
         }
 
         updateEnemies();
@@ -350,10 +375,12 @@ public class GamePanel extends JPanel implements ActionListener {
                 boolean hit;
                 hit = isHit(b, posX, posY, playerHitbox);
 
-                if (hit || b.death < current) {
-                    playerHealth = playerHealth - b.damage;
-                    if (playerHealth <= 0) {
-                        playerDead = true;
+                if (b.death < current || hit) {
+                    if (hit) {
+                        playerHealth = playerHealth - b.damage;
+                        if (playerHealth <= 0) {
+                            playerDead = true;
+                        }
                     }
                     iterator.remove();
                 }
@@ -460,6 +487,21 @@ public class GamePanel extends JPanel implements ActionListener {
                     break;
                 case KeyEvent.VK_SPACE:
                     attackButton = true;
+                    break;
+                case KeyEvent.VK_F:
+                    TEMPBULLETCHECK = 0;
+                    break;
+                case KeyEvent.VK_G:
+                    TEMPBULLETCHECK = 1;
+                    break;
+                case KeyEvent.VK_H:
+                    TEMPBULLETCHECK = 2;
+                    break;
+                case KeyEvent.VK_J:
+                    TEMPBULLETCHECK = 3;
+                    break;
+                case KeyEvent.VK_K:
+                    TEMPBULLETCHECK = 4;
                     break;
             }
         }
