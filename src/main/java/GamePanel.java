@@ -234,13 +234,16 @@ public class GamePanel extends JPanel implements ActionListener {
     public void level1() {
 
         // occasionally spawn enemies (method subject to change)
-        if (tick % 600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
-            makeEnemy(((int) (Math.random() * 1900)), 50, 100,false, "basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
-        } else if (tick % 800 == 0) {
-           makeEnemy(((int) (Math.random() * 1900)), 50, 500,false, "track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
+        if (tick % 1600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
+            makeEnemy(((int) (Math.random() * 1800)), 50, 100,false, tick,"basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
+        } else if (tick % 1800 == 0) {
+           makeEnemy(((int) (Math.random() * 1800)), 50, 500,false, tick,"track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
+        } else if (tick % 100 == 0) {
+            makeEnemy(((int) (Math.random() * 1800)), -20, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         }
-        if (tick % 2 == 0) {
-           makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"));
+
+        if (tick == 1600) {
+           makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"));
         }
 
         // player attacks
@@ -278,7 +281,7 @@ public class GamePanel extends JPanel implements ActionListener {
     private static Integer NextBulletID = 1;    // makes sure we don't overwrite a bullet or enemy in the map, increments by 1 everytime we add one in
     private static Integer NextEnemyID = 1;
 
-    public void makeEnemy(double x, double y, int health, boolean dead, String name, Dimension hitbox, Image image) {
+    public void makeEnemy(double x, double y, int health, boolean dead, long tick, String name, Dimension hitbox, Image image) {
         BasicEnemy e = new BasicEnemy();
         e.x = x;
         e.y = y;
@@ -288,6 +291,7 @@ public class GamePanel extends JPanel implements ActionListener {
         e.name = name;
         e.hitbox = hitbox;
         e.image = image;
+        e.tickWhenCreated = tick;
 
         basicEnemyMap.put(NextEnemyID, e);
         NextEnemyID++;
@@ -322,6 +326,8 @@ public class GamePanel extends JPanel implements ActionListener {
                     basicBulletMap = e.basic(tick, basicBulletMap, this);
                 } else if (e.name.equalsIgnoreCase("track")) {
                     basicBulletMap = e.track(tick, basicBulletMap, this);
+                } else if (e.name.equalsIgnoreCase("swooper")) {
+                    basicBulletMap = e.swooper(tick, basicBulletMap, this);
                 } else if (e.name.equalsIgnoreCase("boss")) {
                     basicBulletMap = e.boss(tick, basicBulletMap, this);
                 }
