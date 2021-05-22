@@ -239,7 +239,7 @@ public class GamePanel extends JPanel implements ActionListener {
         } else if (tick % 1800 == 0) {
            makeEnemy(((int) (Math.random() * 1800)), 50, 500,false, tick,"track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         } else if (tick % 100 == 0) {
-            makeEnemy(((int) (Math.random() * 1800)), -20, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
+            makeEnemy(((int) (Math.random() * 1800)), -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         }
 
         if (tick == 1600) {
@@ -252,7 +252,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
             switch (TEMPBULLETCHECK) {
                 case 0:
-                    new BasicBullet().EverythingBullet(posX, posY, 4000, 5, 200, 0, .2, 5, 270, 0, true, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    //new BasicBullet().EverythingBullet(posX, posY, 4000, 5, 200, 0, .2, 5, 270, 0, true, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    new BasicBullet().slowdownBullet(posX, posY, 12000, 5, 270, 200, 180, 2, getToolkit().getImage("images/neonBullet.jpg"), this);
                     break;
                 case 1:
                     new BasicBullet().EverythingBullet(posX, posY, 4000, 5, 10, 0, .2, 4, 270, 0, true, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
