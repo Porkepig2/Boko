@@ -22,6 +22,7 @@ import javax.swing.Timer;
 import javax.swing.text.Element;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -182,7 +183,16 @@ public class GamePanel extends JPanel implements ActionListener {
             g.fillRect(posX,posY-23,(int)(((double)playerHealth/playerTotalHealth)*playerHitbox.width), 16);
 
            for (BasicBullet b : basicBulletMap.values()) {
-               g.drawImage(b.image,(int)b.x,(int)b.y,b.hitbox.width,b.hitbox.height,this);
+               if (b.rotationSensitive) {
+                   Graphics2D g2d = (Graphics2D)g;
+
+                   AffineTransform old = g2d.getTransform();
+                   g2d.rotate(b.trajectory, b.x+((double)b.hitbox.width/2), b.y+((double)b.hitbox.height/2));
+                   g.drawImage(b.image, (int) b.x, (int) b.y, b.hitbox.width, b.hitbox.height, this);
+                   g2d.setTransform(old);
+               } else {
+                   g.drawImage(b.image, (int) b.x, (int) b.y, b.hitbox.width, b.hitbox.height, this);
+               }
            }
             for (BasicEnemy e : basicEnemyMap.values()) {
                 g.drawImage(e.image,(int)e.x,(int)e.y,e.hitbox.width,e.hitbox.height,this);
@@ -236,9 +246,9 @@ public class GamePanel extends JPanel implements ActionListener {
         // occasionally spawn enemies (method subject to change)
         if (tick % 1600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
             makeEnemy(((int) (Math.random() * 1800)), 50, 100,false, tick,"basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
-        } else if (tick % 1800 == 0) {
+        } else if (tick % 800 == 0) {
            makeEnemy(((int) (Math.random() * 1800)), 50, 500,false, tick,"track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
-        } else if (tick % 100 == 0) {
+        } else if (tick % 1000 == 0) {
             makeEnemy(((int) (Math.random() * 1800)), -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         }
 
@@ -247,7 +257,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         // player attacks
-        if (attackButton && tick % 20 == 0) {
+        if (attackButton && tick % 60 == 0) {
             //  new BasicBullet().friendlyBasicBullet(posX, posY, 8000, 4, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
 
             switch (TEMPBULLETCHECK) {

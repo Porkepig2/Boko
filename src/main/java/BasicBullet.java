@@ -24,6 +24,7 @@ public class BasicBullet {
     boolean slowdown = false;
     boolean cos = false;
     boolean pulse = false;
+    boolean rotationSensitive = false;
     double trajectory = Math.toRadians(90); //  angle in radians on which direction the bullet is shooting
     double curve = 0; // curves trajectory (in 1/10 degrees: 10 = 1degree, -450 = -45 degrees
     boolean friendly = false;   // if the bullet is friendly to us or not (ex, our bullets)
@@ -234,6 +235,7 @@ public class BasicBullet {
         b.hY = y;
         b.startingX = x;
         b.startingY = y;
+        b.rotationSensitive = true;
 
         long current = System.currentTimeMillis();
 
