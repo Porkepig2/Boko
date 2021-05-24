@@ -10,16 +10,12 @@ updating bullet & enemy classes
 
  */
 
-import javafx.scene.effect.Glow;
-import javafx.scene.image.ImageView;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.swing.*;
 import javax.swing.Timer;
-import javax.swing.text.Element;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
@@ -72,6 +68,7 @@ public class GamePanel extends JPanel implements ActionListener {
     long tick;              // goes up by 1 every DELAY time passed, 16ms = 60 times a second
     int TEMPBULLETCHECK;
 
+    Map<Integer, Runnable> levelLayout = new HashMap<>();     // stores when all the enemys are going to appear
     Map<Integer, BasicBullet> basicBulletMap = new HashMap<>(); // holds all bullets on screen in a hashmap
     Map<Integer, BasicEnemy> basicEnemyMap = new HashMap<>();   // holds all enemies on screen in a hashmap
 
@@ -113,7 +110,7 @@ public class GamePanel extends JPanel implements ActionListener {
     GamePanel() {   // deals with odd stuff
         random = new Random();
         this.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
-        this.setBackground(Color.BLACK);
+        this.setBackground(Color.WHITE);
         this.setFocusable(true);
         this.addKeyListener(new MyKeyAdapter());
         this.addMouseListener(new MyMouseAdapter());
@@ -216,6 +213,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
                 mainmenu = false;
                 level1 = true;
+                inputEnemiesIntoMap();
             }
         }
 
@@ -241,12 +239,31 @@ public class GamePanel extends JPanel implements ActionListener {
 
     }
 
+    public void inputEnemiesIntoMap() {
+
+        levelLayout.put(60, new BasicEnemy().makeEnemy(50, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
+        levelLayout.put(70, new BasicEnemy().makeEnemy(200, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
+        levelLayout.put(80, new BasicEnemy().makeEnemy(350, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
+        levelLayout.put(90, new BasicEnemy().makeEnemy(1500, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
+        levelLayout.put(100, new BasicEnemy().makeEnemy(1650, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
+        levelLayout.put(110, new BasicEnemy().makeEnemy(1800, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
+
+       // levelLayout.put(400, makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+
+
+    }
+
     public void level1() {
 
-        // occasionally spawn enemies (method subject to change)
+      // if (levelLayout.containsKey((int)tick)) {
+
+      //     levelLayout.get((int)tick);
+      // }
+
+        /*
         if (tick % 1600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
             makeEnemy(((int) (Math.random() * 1800)), 50, 100,false, tick,"basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
-        } else if (tick % 800 == 0) {
+        } else if (tick % 80 == 0) {
            makeEnemy(((int) (Math.random() * 1800)), 50, 500,false, tick,"track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         } else if (tick % 1000 == 0) {
             makeEnemy(((int) (Math.random() * 1800)), -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
@@ -255,9 +272,20 @@ public class GamePanel extends JPanel implements ActionListener {
         if (tick == 1600) {
            makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"));
         }
+*/
+        shootPlayerBullets();
+
+
+
+        updateEnemies();
+        updateBullets();
+        tick++;
+    }
+
+    public void shootPlayerBullets() {
 
         // player attacks
-        if (attackButton && tick % 60 == 0) {
+        if (attackButton && tick % 10 == 0) {
             //  new BasicBullet().friendlyBasicBullet(posX, posY, 8000, 4, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
 
             switch (TEMPBULLETCHECK) {
@@ -280,19 +308,12 @@ public class GamePanel extends JPanel implements ActionListener {
             }
         }
 
-        if (attackButton && tick % 20 == 0 && basicEnemyMap.values().toArray().length > 0) {
-         // new BasicBullet().friendlyTrackBullet(posX, posY, 4000, 14, 20,100,  true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
-        }
-
-        updateEnemies();
-        updateBullets();
-        tick++;
     }
 
     private static Integer NextBulletID = 1;    // makes sure we don't overwrite a bullet or enemy in the map, increments by 1 everytime we add one in
     private static Integer NextEnemyID = 1;
 
-    public void makeEnemy(double x, double y, int health, boolean dead, long tick, String name, Dimension hitbox, Image image) {
+    public Boolean makeEnemy(double x, double y, int health, boolean dead, long tick, String name, Dimension hitbox, Image image) {
         BasicEnemy e = new BasicEnemy();
         e.x = x;
         e.y = y;
@@ -306,11 +327,17 @@ public class GamePanel extends JPanel implements ActionListener {
 
         basicEnemyMap.put(NextEnemyID, e);
         NextEnemyID++;
+        return false;
     }
 
     public void addBulletToMap(BasicBullet b) {
         basicBulletMap.put(NextBulletID, b);
         NextBulletID++;
+    }
+
+    public void addEnemyToMap(BasicEnemy e) {
+        basicEnemyMap.put(NextEnemyID, e);
+        NextEnemyID++;
     }
 
     public boolean isHit(BasicBullet b, double targetX, double targetY, Dimension targetD) {    // checks if a bullet hits a target
