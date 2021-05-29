@@ -68,7 +68,7 @@ public class GamePanel extends JPanel implements ActionListener {
     long tick;              // goes up by 1 every DELAY time passed, 16ms = 60 times a second
     int TEMPBULLETCHECK;
 
-    Map<Integer, Runnable> levelLayout = new HashMap<>();     // stores when all the enemys are going to appear
+    Map<Integer, BasicEnemy> levelLayout = new HashMap<>();     // stores when all the enemys are going to appear
     Map<Integer, BasicBullet> basicBulletMap = new HashMap<>(); // holds all bullets on screen in a hashmap
     Map<Integer, BasicEnemy> basicEnemyMap = new HashMap<>();   // holds all enemies on screen in a hashmap
 
@@ -110,7 +110,7 @@ public class GamePanel extends JPanel implements ActionListener {
     GamePanel() {   // deals with odd stuff
         random = new Random();
         this.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
-        this.setBackground(Color.WHITE);
+        this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.addKeyListener(new MyKeyAdapter());
         this.addMouseListener(new MyMouseAdapter());
@@ -241,12 +241,13 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void inputEnemiesIntoMap() {
 
-        levelLayout.put(60, new BasicEnemy().makeEnemy(50, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
-        levelLayout.put(70, new BasicEnemy().makeEnemy(200, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
-        levelLayout.put(80, new BasicEnemy().makeEnemy(350, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
-        levelLayout.put(90, new BasicEnemy().makeEnemy(1500, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
-        levelLayout.put(100, new BasicEnemy().makeEnemy(1650, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
-        levelLayout.put(110, new BasicEnemy().makeEnemy(1800, -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
+        levelLayout.put(60, new BasicEnemy(50, -70, 500,false, "swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
+        levelLayout.put(80, new BasicEnemy(200, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
+        levelLayout.put(200, new BasicEnemy(350, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
+        levelLayout.put(160, new BasicEnemy(1500, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
+        levelLayout.put(100, new BasicEnemy(1650, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
+        levelLayout.put(110, new BasicEnemy(1800, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
+        levelLayout.put(130, new BasicEnemy(100, 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
 
        // levelLayout.put(400, makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
 
@@ -255,22 +256,27 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void level1() {
 
-      // if (levelLayout.containsKey((int)tick)) {
+       if (levelLayout.containsKey((int)tick)) {
 
-      //     levelLayout.get((int)tick);
-      // }
+          BasicEnemy e = levelLayout.get((int)tick);
+
+          e.tickWhenCreated = tick;
+
+          addEnemyToMap(e);
+
+       }
 
         /*
         if (tick % 1600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
-            makeEnemy(((int) (Math.random() * 1800)), 50, 100,false, tick,"basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
+            makeEnemy(((int) (Math.random() * 1800)), 50, 100,false, "basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
         } else if (tick % 80 == 0) {
-           makeEnemy(((int) (Math.random() * 1800)), 50, 500,false, tick,"track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
+           makeEnemy(((int) (Math.random() * 1800)), 50, 500,false, "track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         } else if (tick % 1000 == 0) {
-            makeEnemy(((int) (Math.random() * 1800)), -70, 500,false, tick,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
+            makeEnemy(((int) (Math.random() * 1800)), -70, 500,false, "swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
         }
 
         if (tick == 1600) {
-           makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"));
+           makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"));
         }
 */
         shootPlayerBullets();
@@ -312,23 +318,6 @@ public class GamePanel extends JPanel implements ActionListener {
 
     private static Integer NextBulletID = 1;    // makes sure we don't overwrite a bullet or enemy in the map, increments by 1 everytime we add one in
     private static Integer NextEnemyID = 1;
-
-    public Boolean makeEnemy(double x, double y, int health, boolean dead, long tick, String name, Dimension hitbox, Image image) {
-        BasicEnemy e = new BasicEnemy();
-        e.x = x;
-        e.y = y;
-        e.health = health;
-        e.totalHealth = health;
-        e.dead = dead;
-        e.name = name;
-        e.hitbox = hitbox;
-        e.image = image;
-        e.tickWhenCreated = tick;
-
-        basicEnemyMap.put(NextEnemyID, e);
-        NextEnemyID++;
-        return false;
-    }
 
     public void addBulletToMap(BasicBullet b) {
         basicBulletMap.put(NextBulletID, b);

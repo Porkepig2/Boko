@@ -17,22 +17,17 @@ public class BasicEnemy {
     Image image;        // image of enemy
     double movementDirection = 4;
     double cosCounter = 0;
-    long tickWhenCreated = 0;
+    public long tickWhenCreated = 0;
 
-    public Runnable makeEnemy(double x, double y, int health, boolean dead, long tick, String name, Dimension hitbox, Image image, GamePanel g) {
-        BasicEnemy e = new BasicEnemy();
-        e.x = x;
-        e.y = y;
-        e.health = health;
-        e.totalHealth = health;
-        e.dead = dead;
-        e.name = name;
-        e.hitbox = hitbox;
-        e.image = image;
-        e.tickWhenCreated = tick;
-
-        g.addEnemyToMap(e);
-        return null;
+    public BasicEnemy(double x, double y, int health, boolean dead, String name, Dimension hitbox, Image image) {
+        this.x = x;
+        this.y = y;
+        this.health = health;
+        this.totalHealth = health;
+        this.dead = dead;
+        this.name = name;
+        this.hitbox = hitbox;
+        this.image = image;
     }
 
     public Map<Integer, BasicBullet> swooper(long tick, Map<Integer, BasicBullet> basicBulletMap, GamePanel g) {  // for enemy named this
