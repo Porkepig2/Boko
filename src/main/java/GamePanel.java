@@ -10,6 +10,8 @@ updating bullet & enemy classes
 
  */
 
+import com.sun.applet2.preloader.event.ApplicationExitEvent;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -36,10 +38,17 @@ public class GamePanel extends JPanel implements ActionListener {
     int PLAYER_SPEED;   // player speed
 
     //images
-    Image menuImage;        // main menu image
-    Image backgroundImage;  // level 1 background
-    Image characterImage;   // character image
-
+    Image menuImage = getToolkit().getImage("images/menu.jpg");
+    Image menu_sImage = getToolkit().getImage("images/menu_s.jpg");
+    Image menu_oImage = getToolkit().getImage("images/menu_o.jpg");
+    Image menu_lImage = getToolkit().getImage("images/menu_l.jpg");
+    Image menu_qImage = getToolkit().getImage("images/menu_q.jpg");
+    Image menu_o_menuImage = getToolkit().getImage("images/menu_o_menu.jpg");
+    Image menu_o_menu_bImage = getToolkit().getImage("images/menu_o_menu_b.jpg");
+    Image menu_l_menuImage = getToolkit().getImage("images/menu_l_menu.jpg");
+    Image menu_l_menu_bImage = getToolkit().getImage("images/menu_l_menu_b.jpg");
+    Image backgroundImage = getToolkit().getImage("images/background.jpg");
+    Image characterImage = getToolkit().getImage("images/character.jpg");
 
     //sounds
     File menuMusic;         // menu music
@@ -56,6 +65,7 @@ public class GamePanel extends JPanel implements ActionListener {
     int mouseX; // mouse x position
     int mouseY; // mouse y position
     boolean mainmenu;   // game state menu
+    int menuscreen = 0;     // changes screen in menu depending on what user clicks (ex. options)
     boolean level1;     // game state lv1
     Timer timer;    // timer for everything (with the DELAY from above)
     Random random;
@@ -65,6 +75,7 @@ public class GamePanel extends JPanel implements ActionListener {
     boolean movingD;    // moving down
     boolean attackButton;   // if pressing attack button
     boolean mousePressed;   // if mouse was pressed
+    boolean mouseMoved;
     long tick;              // goes up by 1 every DELAY time passed, 16ms = 60 times a second
     int TEMPBULLETCHECK;
 
@@ -79,12 +90,6 @@ public class GamePanel extends JPanel implements ActionListener {
 
         //changable stats
         PLAYER_SPEED = 8;
-
-        //images
-        menuImage = getToolkit().getImage("images/menu.jpg");
-        backgroundImage = getToolkit().getImage("images/background.jpg");
-        characterImage = getToolkit().getImage("images/character.jpg");
-
 
         //sounds
         menuMusic = new File("music/menu.wav");
@@ -103,6 +108,7 @@ public class GamePanel extends JPanel implements ActionListener {
         movingU = false;
         movingD = false;
         mousePressed = false;
+        mouseMoved = false;
         tick = 0;
         TEMPBULLETCHECK = 0;
     }
@@ -113,7 +119,8 @@ public class GamePanel extends JPanel implements ActionListener {
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.addKeyListener(new MyKeyAdapter());
-        this.addMouseListener(new MyMouseAdapter());
+        this.addMouseListener(new MyMousePressAdapter());
+        this.addMouseMotionListener(new MyMouseMoveAdapter());
         startGame();
     }
 
@@ -151,6 +158,27 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void mainMenu() {
 
+        if (movingD && menuscreen == 0) {
+            menuscreen = 1;
+        } else if (movingD && menuscreen == 1) {
+            menuscreen = 2;
+        } else if (movingD && menuscreen == 2) {
+            menuscreen = 3;
+        } else if (movingD && menuscreen == 3) {
+            menuscreen = 4;
+        } else if (movingD && menuscreen == 4) {
+            menuscreen = 1;
+        } else if (movingU && menuscreen == 0) {
+            menuscreen = 1;
+        } else if (movingU && menuscreen == 1) {
+            menuscreen = 4;
+        } else if (movingU && menuscreen == 4) {
+            menuscreen = 3;
+        } else if (movingU && menuscreen == 3) {
+            menuscreen = 2;
+        } else if (movingU && menuscreen == 2) {
+            menuscreen = 1;
+        }
 
     }
 
@@ -163,12 +191,38 @@ public class GamePanel extends JPanel implements ActionListener {
 
         if (mainmenu) { // everything in main menu scene
 
-            g.setColor(Color.WHITE);
-            g.drawImage(menuImage,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,this);
-            g.drawRect(30, 500, 500, 200);
-            //g.setFont( new Font("Dirty Roma",Font.PLAIN, 170));
-            //g.drawString("START", 120, 650);
+            switch (menuscreen) {
 
+                case 0: // menu screen
+                    g.drawImage(menuImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, this);
+                    //g.setFont( new Font("Dirty Roma",Font.PLAIN, 170));
+                    break;
+                case 1: // hover over start
+                    g.drawImage(menu_sImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, this);
+                    break;
+                case 2: // hover over options
+                    g.drawImage(menu_oImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, this);
+                    break;
+                case 3: // hover over leaderboard
+                    g.drawImage(menu_lImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, this);
+                    break;
+                case 4: // hover over quit
+                    g.drawImage(menu_qImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, this);
+                    break;
+                case 5: // clicked options
+                    g.drawImage(menu_o_menuImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, this);
+                    break;
+                case 6: // clicked options hover over back
+                    g.drawImage(menu_o_menu_bImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, this);
+                    break;
+                case 7: // clicked leaderboard
+                    g.drawImage(menu_l_menuImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, this);
+                    break;
+                case 8: // clicked leaderboard hover over back
+                    g.drawImage(menu_l_menu_bImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, this);
+                    break;
+
+            }
         } else if (level1) {    // everything in level1 scene
 
 
@@ -209,15 +263,67 @@ public class GamePanel extends JPanel implements ActionListener {
 
         if (mainmenu) {
 
-            if (mouseX > 0 && mouseX < SCREEN_WIDTH && mouseY > 0 && mouseY < SCREEN_HEIGHT) {
+            if (menuscreen < 5) {
+                if (mouseX > 1200 && mouseX < SCREEN_WIDTH - 10 && mouseY > 359 && mouseY < SCREEN_HEIGHT - 530) {
 
-                mainmenu = false;
-                level1 = true;
-                inputEnemiesIntoMap();
+                    mainmenu = false;
+                    level1 = true;
+                    inputEnemiesIntoMap();
+                } else if (mouseX > 1100 && mouseX < SCREEN_WIDTH - 60 && mouseY > 530 && mouseY < SCREEN_HEIGHT - 378) {
+
+                    menuscreen = 5;
+                } else if (mouseX > 1000 && mouseX < SCREEN_WIDTH - 120 && mouseY > 679 && mouseY < SCREEN_HEIGHT - 208) {
+
+                    menuscreen = 7;
+                } else if (mouseX > 900 && mouseX < SCREEN_WIDTH - 180 && mouseY > 850 && mouseY < SCREEN_HEIGHT - 63) {
+
+                    //quit
+                }
+            } else if (menuscreen <= 6) {
+                if (mouseX > 7 && mouseX < 320 && mouseY > 7 && mouseY < 150) {
+                    menuscreen = 0;
+                }
+            } else if (menuscreen <= 8) {
+                if (mouseX > 7 && mouseX < 320 && mouseY > 7 && mouseY < 150) {
+                    menuscreen = 0;
+                }
             }
         }
 
         mousePressed = false;
+    }
+
+    public void checkMouseMoveLocation() {  // runs if player clicked, and checks if that click affects anything
+
+        if (mainmenu) {
+            if (menuscreen < 5) {
+                if (mouseX > 1200 && mouseX < SCREEN_WIDTH - 10 && mouseY > 359 && mouseY < SCREEN_HEIGHT - 530) {
+                    menuscreen = 1;
+                } else if (mouseX > 1100 && mouseX < SCREEN_WIDTH - 60 && mouseY > 530 && mouseY < SCREEN_HEIGHT - 378) {
+                    menuscreen = 2;
+                } else if (mouseX > 1000 && mouseX < SCREEN_WIDTH - 120 && mouseY > 679 && mouseY < SCREEN_HEIGHT - 208) {
+                    menuscreen = 3;
+                } else if (mouseX > 900 && mouseX < SCREEN_WIDTH - 180 && mouseY > 850 && mouseY < SCREEN_HEIGHT - 63) {
+                    menuscreen = 4;
+                } else {
+                    menuscreen = 0;
+                }
+            } else if (menuscreen <= 6) {
+                if (mouseX > 7 && mouseX < 320 && mouseY > 7 && mouseY < 150) {
+                    menuscreen = 6;
+                } else {
+                    menuscreen = 5;
+                }
+            } else if (menuscreen <= 8) {
+                if (mouseX > 7 && mouseX < 320 && mouseY > 7 && mouseY < 150) {
+                    menuscreen = 8;
+                } else {
+                    menuscreen = 7;
+                }
+            }
+        }
+
+        mouseMoved = false;
     }
 
     @Override
@@ -233,6 +339,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
         if (mousePressed) {
             checkClickLocation();
+        } else if (mouseMoved) {
+            checkMouseMoveLocation();
         }
 
         repaint();  // draws screen again
@@ -248,6 +356,7 @@ public class GamePanel extends JPanel implements ActionListener {
         levelLayout.put(100, new BasicEnemy(1650, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
         levelLayout.put(110, new BasicEnemy(1800, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
         levelLayout.put(130, new BasicEnemy(100, 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        levelLayout.put(500, new BasicEnemy(100, 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
 
        // levelLayout.put(400, makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
 
@@ -462,7 +571,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    public class MyMouseAdapter extends MouseAdapter {
+    public class MyMousePressAdapter extends MouseAdapter {
 
         @Override
         public void mousePressed(MouseEvent e) {    // if player presses the mouse button
@@ -470,8 +579,17 @@ public class GamePanel extends JPanel implements ActionListener {
             mouseY = e.getY();
             mousePressed = true;
         }
+
     }
 
+    public class MyMouseMoveAdapter extends MouseAdapter {
+        @Override
+        public void mouseMoved(MouseEvent e) {
+                mouseX = e.getX();
+                mouseY = e.getY();
+                mouseMoved = true;
+        }
+    }
     public class MyKeyAdapter extends KeyAdapter {
 
         @Override
