@@ -11,6 +11,16 @@ updating bullet & enemy classes
  */
 
 import com.sun.applet2.preloader.event.ApplicationExitEvent;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import javafx.scene.media.VideoTrack;
+import javafx.stage.Screen;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -55,6 +65,8 @@ public class GamePanel extends JPanel implements ActionListener {
     Clip menuClip;
 
 
+    JPanel videoPanel = this;
+
     //main
     int posX;   // character x
     int posY;   // character y
@@ -64,6 +76,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Dimension playerHitbox; // player hitbox in dimension (width, height)
     int mouseX; // mouse x position
     int mouseY; // mouse y position
+    boolean introclip;
     boolean mainmenu;   // game state menu
     int menuscreen = 0;     // changes screen in menu depending on what user clicks (ex. options)
     boolean level1;     // game state lv1
@@ -78,6 +91,16 @@ public class GamePanel extends JPanel implements ActionListener {
     boolean mouseMoved;
     long tick;              // goes up by 1 every DELAY time passed, 16ms = 60 times a second
     int TEMPBULLETCHECK;
+
+    final JFXPanel VFXPanel = new JFXPanel();
+
+    File video_source = new File("video/boko intro.mp4");
+    Media m = new Media(video_source.toURI().toString());
+    MediaPlayer player = new MediaPlayer(m);
+    MediaView viewer = new MediaView(player);
+
+    StackPane root = new StackPane();
+    Scene scene = new Scene(root);
 
     Map<Integer, BasicEnemy> levelLayout = new HashMap<>();     // stores when all the enemys are going to appear
     Map<Integer, BasicBullet> basicBulletMap = new HashMap<>(); // holds all bullets on screen in a hashmap
@@ -102,7 +125,8 @@ public class GamePanel extends JPanel implements ActionListener {
         playerDead = false;
         playerHitbox = new Dimension (UNIT_SIZE, UNIT_SIZE);
         level1 = false;
-        mainmenu = true;
+        introclip = true;
+        mainmenu = false;
         movingL = false;
         movingR = false;
         movingU = false;
@@ -129,8 +153,9 @@ public class GamePanel extends JPanel implements ActionListener {
         timer = new Timer(DELAY, this); // create the timer
         timer.start();
 
+        getVideo();
         refreshStats(); // reset all variables
-        setupMusic();   // sets up music
+        //setupMusic();   // sets up music
 
         try {   // sets up one-time font setupper (changeable with one line after this)
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Dirty Roma.otf")).deriveFont(120f);
@@ -324,6 +349,31 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         mouseMoved = false;
+    }
+
+    private void getVideo(){
+
+
+        // center video position
+        javafx.geometry.Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+
+        viewer.setX((screen.getWidth() - videoPanel.getWidth()) / 2);
+        viewer.setY((screen.getHeight() - videoPanel.getHeight()) / 2);
+
+        // resize video based on screen size
+        DoubleProperty width = viewer.fitWidthProperty();
+        DoubleProperty height = viewer.fitHeightProperty();
+        width.bind(Bindings.selectDouble(viewer.sceneProperty(), "width"));
+        height.bind(Bindings.selectDouble(viewer.sceneProperty(), "height"));
+        viewer.setPreserveRatio(true);
+
+        // add video to stackpane
+        root.getChildren().add(viewer);
+
+        VFXPanel.setScene(scene);
+        player.play();
+        videoPanel.setLayout(new BorderLayout());
+        videoPanel.add(VFXPanel, BorderLayout.CENTER);
     }
 
     @Override
@@ -654,6 +704,11 @@ public class GamePanel extends JPanel implements ActionListener {
                 case KeyEvent.VK_K:
                     TEMPBULLETCHECK = 4;
                     break;
+            }
+            if (introclip) {
+                introclip = false;
+                mainmenu = true;
+                player.stop();
             }
         }
     }
