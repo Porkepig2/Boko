@@ -10,17 +10,13 @@ updating bullet & enemy classes
 
  */
 
-import com.sun.applet2.preloader.event.ApplicationExitEvent;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import javafx.scene.media.VideoTrack;
-import javafx.stage.Screen;
+import javafx.util.Duration;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -39,9 +35,9 @@ import java.util.*;
 public class GamePanel extends JPanel implements ActionListener {
 
     //static
-    static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;      // gets any screen width
-    static final int SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height-25; // gets any screen height
-    static final int UNIT_SIZE = 50;    // determines one unit, used for player size
+    static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width-5;      // gets any screen width
+    static final int SCREEN_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height-27; // gets any screen height
+    static final int UNIT_SIZE = 50;    // not sure atm
     static final int DELAY = 16;    // delay between frames. 16ms = ~60fps
 
     //changable stats
@@ -64,9 +60,6 @@ public class GamePanel extends JPanel implements ActionListener {
     File menuMusic;         // menu music
     Clip menuClip;
 
-
-    JPanel videoPanel = this;
-
     //main
     int posX;   // character x
     int posY;   // character y
@@ -76,6 +69,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Dimension playerHitbox; // player hitbox in dimension (width, height)
     int mouseX; // mouse x position
     int mouseY; // mouse y position
+    boolean sceneswap;  // swaps scene
     boolean introclip;
     boolean mainmenu;   // game state menu
     int menuscreen = 0;     // changes screen in menu depending on what user clicks (ex. options)
@@ -92,7 +86,8 @@ public class GamePanel extends JPanel implements ActionListener {
     long tick;              // goes up by 1 every DELAY time passed, 16ms = 60 times a second
     int TEMPBULLETCHECK;
 
-    final JFXPanel VFXPanel = new JFXPanel();
+    final JFXPanel VFXPanel = new JFXPanel();   ///// all for displaying mp4
+    JPanel videoPanel = this;
 
     File video_source = new File("video/boko intro.mp4");
     Media m = new Media(video_source.toURI().toString());
@@ -100,7 +95,7 @@ public class GamePanel extends JPanel implements ActionListener {
     MediaView viewer = new MediaView(player);
 
     StackPane root = new StackPane();
-    Scene scene = new Scene(root);
+    Scene scene = new Scene(root);  /////
 
     Map<Integer, BasicEnemy> levelLayout = new HashMap<>();     // stores when all the enemys are going to appear
     Map<Integer, BasicBullet> basicBulletMap = new HashMap<>(); // holds all bullets on screen in a hashmap
@@ -125,6 +120,7 @@ public class GamePanel extends JPanel implements ActionListener {
         playerDead = false;
         playerHitbox = new Dimension (UNIT_SIZE, UNIT_SIZE);
         level1 = false;
+        sceneswap = false;
         introclip = true;
         mainmenu = false;
         movingL = false;
@@ -139,7 +135,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     GamePanel() {   // deals with odd stuff
         random = new Random();
-        this.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
+        this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.addKeyListener(new MyKeyAdapter());
@@ -291,9 +287,7 @@ public class GamePanel extends JPanel implements ActionListener {
             if (menuscreen < 5) {
                 if (mouseX > 1200 && mouseX < SCREEN_WIDTH - 10 && mouseY > 359 && mouseY < SCREEN_HEIGHT - 530) {
 
-                    mainmenu = false;
-                    level1 = true;
-                    inputEnemiesIntoMap();
+                    sceneswap = true;
                 } else if (mouseX > 1100 && mouseX < SCREEN_WIDTH - 60 && mouseY > 530 && mouseY < SCREEN_HEIGHT - 378) {
 
                     menuscreen = 5;
@@ -351,39 +345,22 @@ public class GamePanel extends JPanel implements ActionListener {
         mouseMoved = false;
     }
 
-    private void getVideo(){
-
-
-        // center video position
-        javafx.geometry.Rectangle2D screen = Screen.getPrimary().getVisualBounds();
-
-        viewer.setX((screen.getWidth() - videoPanel.getWidth()) / 2);
-        viewer.setY((screen.getHeight() - videoPanel.getHeight()) / 2);
-
-        // resize video based on screen size
-        DoubleProperty width = viewer.fitWidthProperty();
-        DoubleProperty height = viewer.fitHeightProperty();
-        width.bind(Bindings.selectDouble(viewer.sceneProperty(), "width"));
-        height.bind(Bindings.selectDouble(viewer.sceneProperty(), "height"));
-        viewer.setPreserveRatio(true);
-
-        // add video to stackpane
-        root.getChildren().add(viewer);
-
-        VFXPanel.setScene(scene);
-        player.play();
-        videoPanel.setLayout(new BorderLayout());
-        videoPanel.add(VFXPanel, BorderLayout.CENTER);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {    // runs every time the timer finished (16ms = 60 times a second)
 
-        if (mainmenu) {
+        if (introclip) {
+           if (player.getCurrentTime().toMillis() >= 88000) {
+                sceneswap = true;
+           }
+        } else if (mainmenu) {
             mainMenu();
         } else if (level1) {
             move();
             level1();
+        }
+
+        if (sceneswap) {
+            swapScenes();
         }
 
 
@@ -422,25 +399,9 @@ public class GamePanel extends JPanel implements ActionListener {
           e.tickWhenCreated = tick;
 
           addEnemyToMap(e);
-
        }
 
-        /*
-        if (tick % 1600 == 0) {  // true once every (ex. 600*16ms = 9600ms = 9.6s)
-            makeEnemy(((int) (Math.random() * 1800)), 50, 100,false, "basic", new Dimension (100,100), getToolkit().getImage("images/basicEnemy.jpg"));
-        } else if (tick % 80 == 0) {
-           makeEnemy(((int) (Math.random() * 1800)), 50, 500,false, "track", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
-        } else if (tick % 1000 == 0) {
-            makeEnemy(((int) (Math.random() * 1800)), -70, 500,false, "swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"));
-        }
-
-        if (tick == 1600) {
-           makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"));
-        }
-*/
         shootPlayerBullets();
-
-
 
         updateEnemies();
         updateBullets();
@@ -621,6 +582,35 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
+    public void swapScenes() {
+
+        if (introclip) {
+            introclip = false;
+            mainmenu = true;
+            player.stop();
+            videoPanel.remove(0);
+            setupMusic();
+        }
+        else if (mainmenu) {
+            mainmenu = false;
+            level1 = true;
+            inputEnemiesIntoMap();
+        }
+
+        sceneswap = false;
+    }
+
+    private void getVideo(){
+
+        // add video to stackpane
+        root.getChildren().add(viewer);
+
+        VFXPanel.setScene(scene);
+        player.play();
+        videoPanel.setLayout(new BorderLayout());
+        videoPanel.add(VFXPanel, BorderLayout.CENTER);
+    }
+
     public class MyMousePressAdapter extends MouseAdapter {
 
         @Override
@@ -629,7 +619,6 @@ public class GamePanel extends JPanel implements ActionListener {
             mouseY = e.getY();
             mousePressed = true;
         }
-
     }
 
     public class MyMouseMoveAdapter extends MouseAdapter {
@@ -640,6 +629,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 mouseMoved = true;
         }
     }
+
     public class MyKeyAdapter extends KeyAdapter {
 
         @Override
@@ -706,9 +696,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     break;
             }
             if (introclip) {
-                introclip = false;
-                mainmenu = true;
-                player.stop();
+                sceneswap = true;
             }
         }
     }
