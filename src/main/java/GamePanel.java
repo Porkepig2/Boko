@@ -69,6 +69,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Dimension playerHitbox; // player hitbox in dimension (width, height)
     int mouseX; // mouse x position
     int mouseY; // mouse y position
+    boolean tempintropaused;
     boolean sceneswap;  // swaps scene
     boolean introclip;
     boolean mainmenu;   // game state menu
@@ -120,6 +121,7 @@ public class GamePanel extends JPanel implements ActionListener {
         playerDead = false;
         playerHitbox = new Dimension (UNIT_SIZE, UNIT_SIZE);
         level1 = false;
+        tempintropaused = false;
         sceneswap = false;
         introclip = true;
         mainmenu = false;
@@ -349,9 +351,10 @@ public class GamePanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {    // runs every time the timer finished (16ms = 60 times a second)
 
         if (introclip) {
-           if (player.getCurrentTime().toMillis() >= 88000) {
+            System.out.println(player.getCurrentTime());
+            if (player.getCurrentTime().toMillis() >= 88000) {
                 sceneswap = true;
-           }
+            }
         } else if (mainmenu) {
             mainMenu();
         } else if (level1) {
@@ -362,7 +365,6 @@ public class GamePanel extends JPanel implements ActionListener {
         if (sceneswap) {
             swapScenes();
         }
-
 
         if (mousePressed) {
             checkClickLocation();
@@ -612,7 +614,6 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public class MyMousePressAdapter extends MouseAdapter {
-
         @Override
         public void mousePressed(MouseEvent e) {    // if player presses the mouse button
             mouseX = e.getX();
@@ -659,6 +660,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
         @Override
         public void keyPressed(KeyEvent e) {    // if player presses specific keys
+            boolean tempintropausechecker = tempintropaused;
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
                 case KeyEvent.VK_A:
@@ -694,8 +696,16 @@ public class GamePanel extends JPanel implements ActionListener {
                 case KeyEvent.VK_K:
                     TEMPBULLETCHECK = 4;
                     break;
+                case KeyEvent.VK_P:
+                    if (introclip && !tempintropaused) {
+                        tempintropaused = true;
+                        player.pause();
+                    } else if (introclip && tempintropaused) {
+                        tempintropaused = false;
+                        player.play();
+                    }
             }
-            if (introclip) {
+            if (introclip && tempintropausechecker == tempintropaused) {
                 sceneswap = true;
             }
         }
