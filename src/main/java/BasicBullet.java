@@ -95,6 +95,7 @@ public class BasicBullet {
         if (!track) {
             x = startingX + ((hX - startingX) * (Math.cos(trajectory)) - (hY - startingY) * (Math.sin(trajectory)));
             y = startingY + ((hY - startingY) * (Math.cos(trajectory)) + (hX - startingX) * (Math.sin(trajectory)));
+            //http://danceswithcode.net/engineeringnotes/rotations_in_2d/rotations_in_2d.html       REFERENCE
         }
     }
 
@@ -193,7 +194,6 @@ public class BasicBullet {
         b.shiftToTrack = shiftToTrack;
         b.slowdownRate = slowdownRate/60;   // slows down this much every second (60fps)
         b.slowdown = true;
-        b.friendly = true; // TEMPORARY REMOVE AFTER DONE TESTING
 
         long current = System.currentTimeMillis();
 

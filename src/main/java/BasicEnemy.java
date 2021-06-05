@@ -96,6 +96,8 @@ public class BasicEnemy {
 
             new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8, 90,  Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"), g);
 
+        } else if (tick % 10 == 0) {
+            new BasicBullet().slowdownBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8, 90, 0,0,0.01,Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"),g);
         }
         return basicBulletMap;  // returns map, as bullet might of been added
     }

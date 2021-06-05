@@ -63,10 +63,13 @@ public class GamePanel extends JPanel implements ActionListener {
     //main
     int posX;   // character x
     int posY;   // character y
+    Dimension playerHitbox; // player hitbox in dimension (width, height)
+    Dimension playerHitboxCollision;
+    int posXCollision;
+    int posYCollision;
     int playerHealth; // player health
     int playerTotalHealth;  // for healthbar
     boolean playerDead; // if player died
-    Dimension playerHitbox; // player hitbox in dimension (width, height)
     int mouseX; // mouse x position
     int mouseY; // mouse y position
     boolean tempintropaused;
@@ -119,10 +122,13 @@ public class GamePanel extends JPanel implements ActionListener {
         //main
         posX = UNIT_SIZE*10;
         posY = UNIT_SIZE*12;
+        playerHitbox = new Dimension (UNIT_SIZE, UNIT_SIZE);
+        posXCollision = UNIT_SIZE*10;
+        posYCollision = UNIT_SIZE*12;
+        playerHitboxCollision = new Dimension (UNIT_SIZE/4, UNIT_SIZE/4);
         playerHealth = 25;
         playerTotalHealth = playerHealth;
         playerDead = false;
-        playerHitbox = new Dimension (UNIT_SIZE, UNIT_SIZE);
         level1 = false;
         tempintropaused = false;
         rotatescreen = 0;
@@ -258,7 +264,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
             levelrotation.rotate(rotatescreen, (float)SCREEN_WIDTH/2, SCREEN_HEIGHT);
 
-            g.drawImage(backgroundImage,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,this);
+            g.drawImage(backgroundImage,-1000,-1000,SCREEN_WIDTH+3000,SCREEN_HEIGHT+3000,this);
 
            for (BasicBullet b : basicBulletMap.values()) {
                if (b.rotationSensitive) {
@@ -279,6 +285,9 @@ public class GamePanel extends JPanel implements ActionListener {
                 g.setColor(Color.RED);
                 g.fillRect((int)e.x+2,(int)e.y-23,(int)(((double)e.health/e.totalHealth)*e.hitbox.width), 16);
             }
+
+            g.setColor(Color.RED);
+            g.fillRect(posXCollision,posYCollision,playerHitboxCollision.width,playerHitboxCollision.height);
 
             levelrotation.setTransform(oldlevelrotation);
 
@@ -389,21 +398,10 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void inputEnemiesIntoMap() {
 
-        levelLayout.put(60, new BasicEnemy(50, -70, 500,false, "swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
-        levelLayout.put(80, new BasicEnemy(200, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
-        levelLayout.put(200, new BasicEnemy(350, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
-        levelLayout.put(160, new BasicEnemy(1500, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
-        levelLayout.put(100, new BasicEnemy(1650, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
-        levelLayout.put(110, new BasicEnemy(1800, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
-        levelLayout.put(130, new BasicEnemy(100, 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
-        levelLayout.put(500, new BasicEnemy(100, 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
-        levelLayout.put(20, new BasicEnemy(100, 50, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
-        levelLayout.put(30, new BasicEnemy(100, 50, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
-        levelLayout.put(29, new BasicEnemy(100, 50, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
-        levelLayout.put(28, new BasicEnemy(100, 50, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
-        levelLayout.put(98, new BasicEnemy(100, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
-        levelLayout.put(88, new BasicEnemy(100, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
-        levelLayout.put(78, new BasicEnemy(100, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        levelLayout.put(60, new BasicEnemy(800, -70, 500,false, "swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
+        levelLayout.put(30, new BasicEnemy(800, 500, 4500,false, "basic", new Dimension (200,200), null));
+        levelLayout.put(29, new BasicEnemy(800, 500, 200,false, "boss", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg")));
+        levelLayout.put(78, new BasicEnemy(1400, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
 
        // levelLayout.put(400, makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
 
@@ -471,8 +469,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public boolean isHit(BasicBullet b, double targetX, double targetY, Dimension targetD) {    // checks if a bullet hits a target
 
-        return ((b.x >= targetX && b.x <= targetX + targetD.width) || (b.x + b.hitbox.width >= targetX && b.x + b.hitbox.width <= targetX + targetD.width)) &&
-                ((b.y >= targetY && b.y <= targetY + targetD.height) || (b.y + b.hitbox.height >= targetY && b.y + b.hitbox.height <= targetY + targetD.height));
+        return ((b.x <= targetX && b.x+b.hitbox.width >= targetX) || (b.x+b.hitbox.width >= targetX+targetD.width && b.x <= targetX+targetD.width)) &&
+                ((b.y <= targetY && b.y+b.hitbox.height >= targetY) || (b.y+b.hitbox.height >= targetY+targetD.height && b.y <= targetY+targetD.height));
     }
 
     public void updateEnemies () {
@@ -546,7 +544,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 }
             } else {
                 boolean hit;
-                hit = isHit(b, posX, posY, playerHitbox);
+                hit = isHit(b, posXCollision, posYCollision, playerHitboxCollision);
 
                 if (b.death < current || hit) {
                     if (hit) {
@@ -568,7 +566,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
                 b.MoveBullet(e.x, e.y, e.hitbox, this);
             } else {
-                b.MoveBullet(posX, posY, playerHitbox, this);
+                b.MoveBullet(posXCollision, posYCollision, playerHitboxCollision, this);
             }
         }
     }
@@ -594,6 +592,10 @@ public class GamePanel extends JPanel implements ActionListener {
         if (rotateR) {
             rotatescreen += 0.01;
         }
+
+        System.out.println(posX);
+        posXCollision = (int)((posX+playerHitbox.height/2-SCREEN_WIDTH/2)*Math.cos(-rotatescreen)-(posY+playerHitbox.height/2-SCREEN_HEIGHT)*Math.sin(-rotatescreen)) + SCREEN_WIDTH/2 - playerHitboxCollision.width/2;
+        posYCollision = (int)((posX+playerHitbox.height/2-SCREEN_WIDTH/2)*Math.sin(-rotatescreen)+(posY+playerHitbox.height/2-SCREEN_HEIGHT)*Math.cos(-rotatescreen)) + SCREEN_HEIGHT - playerHitboxCollision.height/2;
 
         if (posX < 0) {
             posX = 0;
