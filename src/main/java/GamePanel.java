@@ -77,6 +77,9 @@ public class GamePanel extends JPanel implements ActionListener {
     boolean level1;     // game state lv1
     Timer timer;    // timer for everything (with the DELAY from above)
     Random random;
+    double rotatescreen;
+    boolean rotateL;
+    boolean rotateR;
     boolean movingL;    // moving left
     boolean movingR;    // moving right
     boolean movingU;    // moving up
@@ -122,9 +125,12 @@ public class GamePanel extends JPanel implements ActionListener {
         playerHitbox = new Dimension (UNIT_SIZE, UNIT_SIZE);
         level1 = false;
         tempintropaused = false;
+        rotatescreen = 0;
         sceneswap = false;
         introclip = true;
         mainmenu = false;
+        rotateL = false;
+        rotateR = false;
         movingL = false;
         movingR = false;
         movingU = false;
@@ -247,14 +253,12 @@ public class GamePanel extends JPanel implements ActionListener {
 
             }
         } else if (level1) {    // everything in level1 scene
+            Graphics2D levelrotation = (Graphics2D)g;
+            AffineTransform oldlevelrotation = levelrotation.getTransform();
 
+            levelrotation.rotate(rotatescreen, (float)SCREEN_WIDTH/2, SCREEN_HEIGHT);
 
-            //g.drawImage(backgroundImage,0,0, SCREEN_WIDTH,SCREEN_HEIGHT, this);
-            g.drawImage(characterImage,posX,posY, playerHitbox.width,playerHitbox.height, this);
-            g.setColor(Color.WHITE);
-            g.fillRect(posX,posY-25,playerHitbox.width, 20);
-            g.setColor(Color.RED);
-            g.fillRect(posX,posY-23,(int)(((double)playerHealth/playerTotalHealth)*playerHitbox.width), 16);
+            g.drawImage(backgroundImage,0,0,SCREEN_WIDTH,SCREEN_HEIGHT,this);
 
            for (BasicBullet b : basicBulletMap.values()) {
                if (b.rotationSensitive) {
@@ -275,6 +279,14 @@ public class GamePanel extends JPanel implements ActionListener {
                 g.setColor(Color.RED);
                 g.fillRect((int)e.x+2,(int)e.y-23,(int)(((double)e.health/e.totalHealth)*e.hitbox.width), 16);
             }
+
+            levelrotation.setTransform(oldlevelrotation);
+
+            g.drawImage(characterImage,posX,posY, playerHitbox.width,playerHitbox.height, this);
+            g.setColor(Color.WHITE);
+            g.fillRect(posX,posY-25,playerHitbox.width, 20);
+            g.setColor(Color.RED);
+            g.fillRect(posX,posY-23,(int)(((double)playerHealth/playerTotalHealth)*playerHitbox.width), 16);
         }
 
 
@@ -351,7 +363,6 @@ public class GamePanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {    // runs every time the timer finished (16ms = 60 times a second)
 
         if (introclip) {
-            System.out.println(player.getCurrentTime());
             if (player.getCurrentTime().toMillis() >= 88000) {
                 sceneswap = true;
             }
@@ -386,6 +397,13 @@ public class GamePanel extends JPanel implements ActionListener {
         levelLayout.put(110, new BasicEnemy(1800, -70, 500,false,"swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
         levelLayout.put(130, new BasicEnemy(100, 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
         levelLayout.put(500, new BasicEnemy(100, 50, 4500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        levelLayout.put(20, new BasicEnemy(100, 50, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        levelLayout.put(30, new BasicEnemy(100, 50, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        levelLayout.put(29, new BasicEnemy(100, 50, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        levelLayout.put(28, new BasicEnemy(100, 50, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        levelLayout.put(98, new BasicEnemy(100, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        levelLayout.put(88, new BasicEnemy(100, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        levelLayout.put(78, new BasicEnemy(100, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
 
        // levelLayout.put(400, makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
 
@@ -558,18 +576,24 @@ public class GamePanel extends JPanel implements ActionListener {
     public void move() {    // simple movement system
 
         if (movingL) {  // move player horizontally
-            posX = posX - PLAYER_SPEED;
+            posX -= PLAYER_SPEED;
         }
         if (movingR) {
-            posX = posX + PLAYER_SPEED;
+            posX += PLAYER_SPEED;
         }
         if (movingU) {  // move player vertically
-            posY = posY - PLAYER_SPEED;
+            posY -= PLAYER_SPEED;
         }
         if (movingD) {
-            posY = posY + PLAYER_SPEED;
+            posY += PLAYER_SPEED;
         }
 
+        if (rotateL) {
+            rotatescreen -= 0.01;
+        }
+        if (rotateR) {
+            rotatescreen += 0.01;
+        }
 
         if (posX < 0) {
             posX = 0;
@@ -638,19 +662,31 @@ public class GamePanel extends JPanel implements ActionListener {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
                 case KeyEvent.VK_A:
+                case KeyEvent.VK_J:
                     movingL = false;
                     break;
                 case KeyEvent.VK_RIGHT:
                 case KeyEvent.VK_D:
+                case KeyEvent.VK_L:
                     movingR = false;
                     break;
                 case KeyEvent.VK_UP:
                 case KeyEvent.VK_W:
+                case KeyEvent.VK_I:
                     movingU = false;
                     break;
                 case KeyEvent.VK_DOWN:
                 case KeyEvent.VK_S:
+                case KeyEvent.VK_K:
                     movingD = false;
+                    break;
+                case KeyEvent.VK_Q:
+                case KeyEvent.VK_U:
+                    rotateL = false;
+                    break;
+                case KeyEvent.VK_E:
+                case KeyEvent.VK_O:
+                    rotateR = false;
                     break;
                 case KeyEvent.VK_SPACE:
                     attackButton = false;
@@ -664,36 +700,48 @@ public class GamePanel extends JPanel implements ActionListener {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
                 case KeyEvent.VK_A:
+                case KeyEvent.VK_J:
                     movingL = true;
                     break;
                 case KeyEvent.VK_RIGHT:
                 case KeyEvent.VK_D:
+                case KeyEvent.VK_L:
                     movingR = true;
                     break;
                 case KeyEvent.VK_UP:
                 case KeyEvent.VK_W:
+                case KeyEvent.VK_I:
                     movingU = true;
                     break;
                 case KeyEvent.VK_DOWN:
                 case KeyEvent.VK_S:
+                case KeyEvent.VK_K:
                     movingD = true;
+                    break;
+                case KeyEvent.VK_Q:
+                case KeyEvent.VK_U:
+                    rotateL = true;
+                    break;
+                case KeyEvent.VK_E:
+                case KeyEvent.VK_O:
+                    rotateR = true;
                     break;
                 case KeyEvent.VK_SPACE:
                     attackButton = true;
                     break;
-                case KeyEvent.VK_F:
+                case KeyEvent.VK_1:
                     TEMPBULLETCHECK = 0;
                     break;
-                case KeyEvent.VK_G:
+                case KeyEvent.VK_2:
                     TEMPBULLETCHECK = 1;
                     break;
-                case KeyEvent.VK_H:
+                case KeyEvent.VK_3:
                     TEMPBULLETCHECK = 2;
                     break;
-                case KeyEvent.VK_J:
+                case KeyEvent.VK_4:
                     TEMPBULLETCHECK = 3;
                     break;
-                case KeyEvent.VK_K:
+                case KeyEvent.VK_5:
                     TEMPBULLETCHECK = 4;
                     break;
                 case KeyEvent.VK_P:
