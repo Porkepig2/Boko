@@ -58,22 +58,21 @@ public class GamePanel extends JPanel implements ActionListener {
     Image characterBulletImage = getToolkit().getImage("Images/neonBullet.jpg");
 
     //sounds
-    File menuMusic;         // menu music
+    File menuMusic = new File("music/menu.wav");         // menu music
     Clip menuClip;
 
     //main
     int posX;   // character x
     int posY;   // character y
-    Dimension playerHitbox; // player hitbox in dimension (width, height)
-    Dimension playerHitboxCollision;
     int posXCollision;
     int posYCollision;
+    Dimension playerHitbox; // player hitbox in dimension (width, height)
+    Dimension playerHitboxCollision;
     int playerHealth; // player health
     int playerTotalHealth;  // for healthbar
     boolean playerDead; // if player died
     int mouseX; // mouse x position
     int mouseY; // mouse y position
-    boolean tempintropaused;
     boolean sceneswap;  // swaps scene
     boolean introclip;
     boolean mainmenu;   // game state menu
@@ -83,28 +82,22 @@ public class GamePanel extends JPanel implements ActionListener {
     Timer timer;    // timer for everything (with the DELAY from above)
     Random random;
     double rotatescreen;
-    boolean rotateL;
-    boolean rotateR;
-    boolean movingL;    // moving left
-    boolean movingR;    // moving right
-    boolean movingU;    // moving up
-    boolean movingD;    // moving down
-    boolean attackButton;   // if pressing attack button
-    boolean mousePressed;   // if mouse was pressed
-    boolean mouseMoved;
     long tick;              // goes up by 1 every DELAY time passed, 16ms = 60 times a second
     int TEMPBULLETCHECK;
 
-    final JFXPanel VFXPanel = new JFXPanel();   ///// all for displaying mp4
-    JPanel videoPanel = this;
+    boolean rotateL = false;    // rotate left
+    boolean rotateR = false;    // rotate right
+    boolean movingL = false;    // moving left
+    boolean movingR = false;    // moving right
+    boolean movingU = false;    // moving up
+    boolean movingD = false;    // moving down
+    boolean attackButton = false;   // if pressing attack button
+    boolean mousePressed = false;   // if mouse was pressed
+    boolean mouseMoved = false;
+    boolean tempintropaused = false;
 
-    File video_source = new File("video/boko intro.mp4");
-    Media m = new Media(video_source.toURI().toString());
-    MediaPlayer player = new MediaPlayer(m);
-    MediaView viewer = new MediaView(player);
-
-    StackPane root = new StackPane();
-    Scene scene = new Scene(root);  /////
+    JPanel videoPanel;  // for intro mp4
+    MediaPlayer player; // for intro mp4
 
     Map<Integer, BasicEnemy> levelLayout = new HashMap<>();     // stores when all the enemys are going to appear
     Map<Integer, BasicBullet> basicBulletMap = new HashMap<>(); // holds all bullets on screen in a hashmap
@@ -118,34 +111,22 @@ public class GamePanel extends JPanel implements ActionListener {
         //changable stats
         PLAYER_SPEED = 8;
 
-        //sounds
-        menuMusic = new File("music/menu.wav");
-
         //main
         posX = UNIT_SIZE*10;
         posY = UNIT_SIZE*12;
-        playerHitbox = new Dimension (UNIT_SIZE, UNIT_SIZE);
         posXCollision = UNIT_SIZE*10;
         posYCollision = UNIT_SIZE*12;
+        playerHitbox = new Dimension (UNIT_SIZE, UNIT_SIZE);
         playerHitboxCollision = new Dimension (UNIT_SIZE/4, UNIT_SIZE/4);
         playerHealth = 25;
         playerTotalHealth = playerHealth;
         playerDead = false;
         level1 = false;
-        tempintropaused = false;
         rotatescreen = 0;
-        playerShootTrajectory = 270;
+        playerShootTrajectory = 90;
         sceneswap = false;
         introclip = true;
         mainmenu = false;
-        rotateL = false;
-        rotateR = false;
-        movingL = false;
-        movingR = false;
-        movingU = false;
-        movingD = false;
-        mousePressed = false;
-        mouseMoved = false;
         tick = 0;
         TEMPBULLETCHECK = 0;
     }
@@ -168,7 +149,6 @@ public class GamePanel extends JPanel implements ActionListener {
 
         getVideo();
         refreshStats(); // reset all variables
-        //setupMusic();   // sets up music
 
         try {   // sets up one-time font setupper (changeable with one line after this)
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/Dirty Roma.otf")).deriveFont(120f);
@@ -282,11 +262,19 @@ public class GamePanel extends JPanel implements ActionListener {
                }
            }
             for (BasicEnemy e : basicEnemyMap.values()) {
+                Graphics2D g2d = (Graphics2D)g;
+
+                AffineTransform old = g2d.getTransform();
+                g2d.rotate(-e.rotationSpawn+Math.toRadians(90), e.x+(float)e.hitbox.width/2, e.y+(float)e.hitbox.height/2);
                 g.drawImage(e.image,(int)e.x,(int)e.y,e.hitbox.width,e.hitbox.height,this);
+
+                g2d.setTransform(old);
+                g2d.rotate(-Math.toRadians(rotatescreen),e.x+(float)e.hitbox.width/2, e.y+(float)e.hitbox.height/2);
                 g.setColor(Color.WHITE);
                 g.fillRect((int)e.x,(int)e.y-25,e.hitbox.width, 20);
                 g.setColor(Color.RED);
                 g.fillRect((int)e.x+2,(int)e.y-23,(int)(((double)e.health/e.totalHealth)*e.hitbox.width), 16);
+                g2d.setTransform(old);
             }
 
             g.setColor(Color.RED);
@@ -403,16 +391,21 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void updateThings() {
 
-        playerShootTrajectory = 270-rotatescreen;
+        playerShootTrajectory = 90-rotatescreen;
 
     }
 
     public void inputEnemiesIntoMap() {
 
-        levelLayout.put(60, new BasicEnemy(800, -70, 500,false, "swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg")));
-        levelLayout.put(30, new BasicEnemy(800, 500, 4500,false, "basic", new Dimension (200,200), null));
-        levelLayout.put(29, new BasicEnemy(800, 500, 200,false, "boss", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg")));
-        levelLayout.put(78, new BasicEnemy(1400, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
+        //levelLayout.put(60, new BasicEnemy(800, -70, 500,false, "swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
+        levelLayout.put(30, new BasicEnemy(280, 800, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(35, new BasicEnemy(90, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(40, new BasicEnemy(130, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(45, new BasicEnemy(170, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(50, new BasicEnemy(60, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(55, new BasicEnemy(20, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        //levelLayout.put(29, new BasicEnemy(800, 500, 200,false, "boss", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"), this));
+        //levelLayout.put(78, new BasicEnemy(1400, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"), this));
 
        // levelLayout.put(400, makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
 
@@ -641,6 +634,17 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     private void getVideo(){
+
+        final JFXPanel VFXPanel = new JFXPanel();   ///// all for displaying mp4
+        videoPanel = this;
+
+        File video_source = new File("video/boko intro.mp4");
+        Media m = new Media(video_source.toURI().toString());
+        player = new MediaPlayer(m);
+        MediaView viewer = new MediaView(player);
+
+        StackPane root = new StackPane();
+        Scene scene = new Scene(root);  /////
 
         // add video to stackpane
         root.getChildren().add(viewer);

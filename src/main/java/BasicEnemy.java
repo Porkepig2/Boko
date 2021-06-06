@@ -9,6 +9,8 @@ public class BasicEnemy {
 
     double x;   // x position
     double y;   // y position
+    double rotationSpawn;  // helps determine where enemy will spawn
+    int distanceSpawn;  // helps determine where enemy will spawn
     int health; // health
     int totalHealth;    // total health (constant, for healthbar)
     boolean dead;  // if enemy gets shot (adding health in future)
@@ -19,15 +21,35 @@ public class BasicEnemy {
     double cosCounter = 0;
     public long tickWhenCreated = 0;
 
-    public BasicEnemy(double x, double y, int health, boolean dead, String name, Dimension hitbox, Image image) {
-        this.x = x;
-        this.y = y;
+    public BasicEnemy(double rotationSpawn, int distanceSpawn, int health, boolean dead, String name, Dimension hitbox, Image image, GamePanel g) {
+        this.rotationSpawn = Math.toRadians(rotationSpawn);
+        this.distanceSpawn = distanceSpawn;
         this.health = health;
         this.totalHealth = health;
         this.dead = dead;
         this.name = name;
         this.hitbox = hitbox;
         this.image = image;
+        testingStuff(g);
+    }
+
+    public void testingStuff(GamePanel g) {
+
+        // I want to add variables that will let me simply spawn an enemy as well as face it towards the player/midpoint
+        //
+        // todo: variable to spawn enemy around player that goes from 0-360     DONE
+        //       variable to choose distance from player                        DONE
+        //
+
+        int sX = GamePanel.SCREEN_WIDTH /2;    // for points enemy rotates around
+        int sY = GamePanel.SCREEN_HEIGHT;
+
+
+        x = ((distanceSpawn) * (Math.cos(rotationSpawn)) - (0) * (Math.sin(rotationSpawn)) + sX - (float)hitbox.width/2);
+        y = ((0) * -(Math.cos(rotationSpawn)) + (distanceSpawn) * -(Math.sin(rotationSpawn)) + sY - (float)hitbox.height/2);
+
+       // System.out.println("x: "+x+"   y: "+y);
+
     }
 
     public Map<Integer, BasicBullet> swooper(long tick, Map<Integer, BasicBullet> basicBulletMap, GamePanel g) {  // for enemy named this
@@ -43,36 +65,36 @@ public class BasicEnemy {
 
         if (x*2 > GamePanel.SCREEN_WIDTH) {
             if (tick - tickWhenCreated == 400) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,60, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,300, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 410) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,70, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,290, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 420) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,80, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,280, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 430) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,90, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,270, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 440) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,100, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,260, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 450) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,110, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,250, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 460) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,120, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,240, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
                 cosCounter = 0;
             }
         } else if (x*2 < GamePanel.SCREEN_WIDTH) {
             if (tick - tickWhenCreated == 400) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 120, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 240, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 410) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 110, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 250, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 420) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 100, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 260, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 430) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 90, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 270, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 440) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 80, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 280, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 450) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 70, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 290, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 460) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 60, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 300, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
                 cosCounter = 0;
             }
         }
@@ -92,12 +114,12 @@ public class BasicEnemy {
 
     public Map<Integer, BasicBullet> basic(long tick, Map<Integer, BasicBullet> basicBulletMap, GamePanel g) {  // for enemy named this
 
-        if (tick % 120 == 0) {
+        if (tick % 12 == 0) {
 
-            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8,10, 90,  Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (float)(this.hitbox.width/2), this.y+(float)(this.hitbox.height/2), 4000, 8,10, Math.toDegrees(this.rotationSpawn)+180,  Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"), g);
 
         } else if (tick % 10 == 0) {
-            new BasicBullet().slowdownBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8,10, 90, 0,0,0.01,Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"),g);
+            new BasicBullet().slowdownBullet(this.x+ (float)(this.hitbox.width/2), this.y+(float)(this.hitbox.height/2), 4000, 8,10, Math.toDegrees(this.rotationSpawn)+180, 0,0,0.01,Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"),g);
         }
         return basicBulletMap;  // returns map, as bullet might of been added
     }
