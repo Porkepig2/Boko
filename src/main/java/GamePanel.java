@@ -55,6 +55,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Image menu_l_menu_bImage = getToolkit().getImage("images/menu_l_menu_b.jpg");
     Image backgroundImage = getToolkit().getImage("images/background.jpg");
     Image characterImage = getToolkit().getImage("images/character.jpg");
+    Image characterBulletImage = getToolkit().getImage("Images/neonBullet.jpg");
 
     //sounds
     File menuMusic;         // menu music
@@ -77,6 +78,7 @@ public class GamePanel extends JPanel implements ActionListener {
     boolean introclip;
     boolean mainmenu;   // game state menu
     int menuscreen = 0;     // changes screen in menu depending on what user clicks (ex. options)
+    double playerShootTrajectory;
     boolean level1;     // game state lv1
     Timer timer;    // timer for everything (with the DELAY from above)
     Random random;
@@ -132,6 +134,7 @@ public class GamePanel extends JPanel implements ActionListener {
         level1 = false;
         tempintropaused = false;
         rotatescreen = 0;
+        playerShootTrajectory = 270;
         sceneswap = false;
         introclip = true;
         mainmenu = false;
@@ -262,7 +265,7 @@ public class GamePanel extends JPanel implements ActionListener {
             Graphics2D levelrotation = (Graphics2D)g;
             AffineTransform oldlevelrotation = levelrotation.getTransform();
 
-            levelrotation.rotate(rotatescreen, (float)SCREEN_WIDTH/2, SCREEN_HEIGHT);
+            levelrotation.rotate(Math.toRadians(rotatescreen), (float)SCREEN_WIDTH/2, SCREEN_HEIGHT);
 
             g.drawImage(backgroundImage,-1000,-1000,SCREEN_WIDTH+3000,SCREEN_HEIGHT+3000,this);
 
@@ -371,6 +374,8 @@ public class GamePanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {    // runs every time the timer finished (16ms = 60 times a second)
 
+        updateThings();
+
         if (introclip) {
             if (player.getCurrentTime().toMillis() >= 88000) {
                 sceneswap = true;
@@ -393,6 +398,12 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         repaint();  // draws screen again
+
+    }
+
+    public void updateThings() {
+
+        playerShootTrajectory = 270-rotatescreen;
 
     }
 
@@ -430,24 +441,23 @@ public class GamePanel extends JPanel implements ActionListener {
 
         // player attacks
         if (attackButton && tick % 10 == 0) {
-            //  new BasicBullet().friendlyBasicBullet(posX, posY, 8000, 4, 90, true, true, Toolkit.getDefaultToolkit().getImage("images/neonBullet.jpg"), this);
 
             switch (TEMPBULLETCHECK) {
                 case 0:
-                    //new BasicBullet().EverythingBullet(posX, posY, 4000, 5, 200, 0, .2, 5, 270, 0, true, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
-                    new BasicBullet().slowdownBullet(posX, posY, 12000, 5, 270, 200, 180, 2, getToolkit().getImage("images/neonBullet.jpg"), this);
+                    new BasicBullet().friendlySlowdownBullet(posXCollision, posYCollision, 12000, 5, 10, playerShootTrajectory, 200, 180, 2, characterBulletImage, this);
+                    new BasicBullet().friendlyBasicBullet(posXCollision, posYCollision, 12000, 5, 10, playerShootTrajectory, characterBulletImage, this);
                     break;
                 case 1:
-                    new BasicBullet().EverythingBullet(posX, posY, 4000, 5, 10, 0, .2, 4, 270, 0, true, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    new BasicBullet().friendlyPulseBullet(posXCollision,posYCollision,12000, 5, 10, playerShootTrajectory, 4, .2, characterBulletImage, this);
                     break;
                 case 2:
-                    new BasicBullet().EverythingBullet(posX, posY, 4000, 5, 10, 0, .05, 2, 270, 0, false, true, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    new BasicBullet().friendlyCosBullet(posXCollision,posYCollision, 4000, 5, 10, playerShootTrajectory,2,.05,characterBulletImage,this);
                     break;
                 case 3:
-                    new BasicBullet().EverythingBullet(posX, posY, 40000, 1, 10, 0, 1, 1, 270, .1, false, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    new BasicBullet().EverythingBullet(posXCollision, posYCollision, 40000, 1, 10, 0, 1, 1, playerShootTrajectory, .1, false, false, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
                     break;
                 case 4:
-                    new BasicBullet().EverythingBullet(posX, posY, 40000, 5, 10, 0, .2, 1, 270, 0, true, true, true, true, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
+                    new BasicBullet().EverythingBullet(posXCollision, posYCollision, 40000, 5, 10, 0, .2, 1, playerShootTrajectory, 0, true, true, true, false, new Dimension(20, 20), getToolkit().getImage("images/neonBullet.jpg"), this);
                     break;
             }
         }
@@ -469,8 +479,11 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public boolean isHit(BasicBullet b, double targetX, double targetY, Dimension targetD) {    // checks if a bullet hits a target
 
-        return ((b.x <= targetX && b.x+b.hitbox.width >= targetX) || (b.x+b.hitbox.width >= targetX+targetD.width && b.x <= targetX+targetD.width)) &&
-                ((b.y <= targetY && b.y+b.hitbox.height >= targetY) || (b.y+b.hitbox.height >= targetY+targetD.height && b.y <= targetY+targetD.height));
+        //return ((b.x <= targetX && b.x+b.hitbox.width >= targetX) || (b.x+b.hitbox.width >= targetX+targetD.width && b.x <= targetX+targetD.width)) &&
+        //        ((b.y <= targetY && b.y+b.hitbox.height >= targetY) || (b.y+b.hitbox.height >= targetY+targetD.height && b.y <= targetY+targetD.height));
+
+        return ((b.x >= targetX && b.x <= targetX+targetD.width) || (b.x+b.hitbox.width >= targetX && b.x+b.hitbox.width <= targetX+targetD.width)) &&
+                ((b.y >= targetY && b.y <= targetY+targetD.height) || (b.y+b.hitbox.height >= targetY && b.y+b.hitbox.height <= targetY+targetD.height));
     }
 
     public void updateEnemies () {
@@ -587,15 +600,14 @@ public class GamePanel extends JPanel implements ActionListener {
         }
 
         if (rotateL) {
-            rotatescreen -= 0.01;
+            rotatescreen -= .5;
         }
         if (rotateR) {
-            rotatescreen += 0.01;
+            rotatescreen += .5;
         }
 
-        System.out.println(posX);
-        posXCollision = (int)((posX+playerHitbox.height/2-SCREEN_WIDTH/2)*Math.cos(-rotatescreen)-(posY+playerHitbox.height/2-SCREEN_HEIGHT)*Math.sin(-rotatescreen)) + SCREEN_WIDTH/2 - playerHitboxCollision.width/2;
-        posYCollision = (int)((posX+playerHitbox.height/2-SCREEN_WIDTH/2)*Math.sin(-rotatescreen)+(posY+playerHitbox.height/2-SCREEN_HEIGHT)*Math.cos(-rotatescreen)) + SCREEN_HEIGHT - playerHitboxCollision.height/2;
+        posXCollision = (int)((posX+playerHitbox.height/2-SCREEN_WIDTH/2)*Math.cos(-Math.toRadians(rotatescreen))-(posY+playerHitbox.height/2-SCREEN_HEIGHT)*Math.sin(-Math.toRadians(rotatescreen))) + SCREEN_WIDTH/2 - playerHitboxCollision.width/2;
+        posYCollision = (int)((posX+playerHitbox.height/2-SCREEN_WIDTH/2)*Math.sin(-Math.toRadians(rotatescreen))+(posY+playerHitbox.height/2-SCREEN_HEIGHT)*Math.cos(-Math.toRadians(rotatescreen))) + SCREEN_HEIGHT - playerHitboxCollision.height/2;
 
         if (posX < 0) {
             posX = 0;

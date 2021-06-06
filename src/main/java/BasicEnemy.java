@@ -43,36 +43,36 @@ public class BasicEnemy {
 
         if (x*2 > GamePanel.SCREEN_WIDTH) {
             if (tick - tickWhenCreated == 400) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 60, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,60, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 410) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 70, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,70, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 420) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 80, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,80, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 430) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 90, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,90, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 440) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 100, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,100, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 450) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 110, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,110, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 460) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 120, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 5, 10,120, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
                 cosCounter = 0;
             }
         } else if (x*2 < GamePanel.SCREEN_WIDTH) {
             if (tick - tickWhenCreated == 400) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8, 120, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 120, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 410) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8, 110, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 110, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 420) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8, 100, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 100, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 430) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8, 90, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 90, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 440) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8, 80, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 80, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 450) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8, 70, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 70, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
             } else if (tick - tickWhenCreated == 460) {
-                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8, 60, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+                new BasicBullet().basicBullet(this.x + (this.hitbox.width / 2.5), this.y + (this.hitbox.height / 1.4), 4000, 8,10, 60, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
                 cosCounter = 0;
             }
         }
@@ -94,10 +94,10 @@ public class BasicEnemy {
 
         if (tick % 120 == 0) {
 
-            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8, 90,  Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8,10, 90,  Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"), g);
 
         } else if (tick % 10 == 0) {
-            new BasicBullet().slowdownBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8, 90, 0,0,0.01,Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"),g);
+            new BasicBullet().slowdownBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 8,10, 90, 0,0,0.01,Toolkit.getDefaultToolkit().getImage("images/basicBullet.jpg"),g);
         }
         return basicBulletMap;  // returns map, as bullet might of been added
     }
@@ -106,7 +106,7 @@ public class BasicEnemy {
 
         if (tick % 120 == 0) {
 
-            new BasicBullet().trackBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 6, 400, Toolkit.getDefaultToolkit().getImage("images/trackBullet.jpg"), g);
+            new BasicBullet().trackBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 4000, 6,10, 400, Toolkit.getDefaultToolkit().getImage("images/trackBullet.jpg"), g);
 
         }
         return basicBulletMap;  // returns map, as bullet might of been added
@@ -124,24 +124,30 @@ public class BasicEnemy {
         }
 
         if (tick % 600 == 0) {
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 0,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 30,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 60,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 90,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 120,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 150,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 180,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 210,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 240,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 270,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 300,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 330,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 0,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 30,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 60,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 90,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 120,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 150,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 180,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 210,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 240,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 270,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 300,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().pulseBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 8000, 6, 10, 330,2,.2, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
         } else if (tick % 20 == 0) {
-            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
-            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5,10, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5,10, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5,10, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5,10, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5,10, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5,10, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5,10, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().basicBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, (int)(Math.random()*10)+5,10, (Math.random() * 1900), Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
         }
         if (tick % 400 == 0) {
-            new BasicBullet().trackBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, 10, 600, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
+            new BasicBullet().trackBullet(this.x+ (this.hitbox.width/2.5), this.y+(this.hitbox.height/1.4), 5000, 10,10, 600, Toolkit.getDefaultToolkit().getImage("images/enemyBullet.jpg"), g);
         }
 
         cosCounter+= .2;
