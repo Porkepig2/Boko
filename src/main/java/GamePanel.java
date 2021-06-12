@@ -56,10 +56,13 @@ public class GamePanel extends JPanel implements ActionListener {
     Image backgroundImage = getToolkit().getImage("images/background.jpg");
     Image characterImage = getToolkit().getImage("images/character.jpg");
     Image characterBulletImage = getToolkit().getImage("Images/neonBullet.jpg");
+    Image wallImage = getToolkit().getImage("Images/wall.jpg");
 
     //sounds
     File menuMusic = new File("music/menu.wav");         // menu music
     Clip menuClip;
+    File lv1Music = new File("music/lv1.wav");         // level 1 music
+    Clip lv1Clip;
 
     //main
     int posX;   // character x
@@ -168,6 +171,12 @@ public class GamePanel extends JPanel implements ActionListener {
             gainControl.setValue(-20.0f);
             menuClip.start();
             menuClip.loop(999);
+
+            AudioInputStream lv1Stream = AudioSystem.getAudioInputStream(lv1Music);
+            lv1Clip = AudioSystem.getClip();
+            lv1Clip.open(lv1Stream);
+            FloatControl lv1gainControl = (FloatControl) lv1Clip.getControl(FloatControl.Type.MASTER_GAIN);
+            lv1gainControl.setValue(-20.0f);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -262,19 +271,24 @@ public class GamePanel extends JPanel implements ActionListener {
                }
            }
             for (BasicEnemy e : basicEnemyMap.values()) {
-                Graphics2D g2d = (Graphics2D)g;
+
+                Graphics2D g2d = (Graphics2D) g;
 
                 AffineTransform old = g2d.getTransform();
-                g2d.rotate(-e.rotationSpawn+Math.toRadians(90), e.x+(float)e.hitbox.width/2, e.y+(float)e.hitbox.height/2);
-                g.drawImage(e.image,(int)e.x,(int)e.y,e.hitbox.width,e.hitbox.height,this);
+                g2d.rotate(-e.rotationSpawn + Math.toRadians(90), e.x + (float) e.hitbox.width / 2, e.y + (float) e.hitbox.height / 2);
+                g.drawImage(e.image, (int) e.x, (int) e.y, e.hitbox.width, e.hitbox.height, this);
 
                 g2d.setTransform(old);
-                g2d.rotate(-Math.toRadians(rotatescreen),e.x+(float)e.hitbox.width/2, e.y+(float)e.hitbox.height/2);
-                g.setColor(Color.WHITE);
-                g.fillRect((int)e.x,(int)e.y-25,e.hitbox.width, 20);
-                g.setColor(Color.RED);
-                g.fillRect((int)e.x+2,(int)e.y-23,(int)(((double)e.health/e.totalHealth)*e.hitbox.width), 16);
+                g2d.rotate(-Math.toRadians(rotatescreen), e.x + (float) e.hitbox.width / 2, e.y + (float) e.hitbox.height / 2);
+
+                if (!e.name.equalsIgnoreCase("wall")) {
+                    g.setColor(Color.WHITE);
+                    g.fillRect((int) e.x, (int) e.y - 25, e.hitbox.width, 20);
+                    g.setColor(Color.RED);
+                    g.fillRect((int) e.x + 2, (int) e.y - 23, (int) (((double) e.health / e.totalHealth) * e.hitbox.width), 16);
+                }
                 g2d.setTransform(old);
+
             }
 
             g.setColor(Color.RED);
@@ -398,13 +412,20 @@ public class GamePanel extends JPanel implements ActionListener {
     public void inputEnemiesIntoMap() {
 
         //levelLayout.put(60, new BasicEnemy(800, -70, 500,false, "swooper", new Dimension (100,100), getToolkit().getImage("images/trackEnemy.jpg"), this));
-        levelLayout.put(30, new BasicEnemy(280, 800, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
-        levelLayout.put(35, new BasicEnemy(90, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
-        levelLayout.put(40, new BasicEnemy(130, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
-        levelLayout.put(45, new BasicEnemy(170, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
-        levelLayout.put(50, new BasicEnemy(60, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
-        levelLayout.put(55, new BasicEnemy(20, 500, 4500,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
-        //levelLayout.put(29, new BasicEnemy(800, 500, 200,false, "boss", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"), this));
+        levelLayout.put(1, new BasicEnemy(0, 1700, 99999,false, "wall", new Dimension (16000,2000), wallImage,this));
+        levelLayout.put(2, new BasicEnemy(180, 1700, 99999,false, "wall", new Dimension (16000,2000), wallImage,this));
+        levelLayout.put(3, new BasicEnemy(200, 900, 99999,false, "wall", new Dimension (800,200), wallImage,this));
+        levelLayout.put(200, new BasicEnemy(0, 500, 300,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(300, new BasicEnemy(20, 550, 300,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(400, new BasicEnemy(40, 600, 300,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(500, new BasicEnemy(60, 650, 300,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(600, new BasicEnemy(80, 700, 300,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(1200, new BasicEnemy(90, 750, 450,false, "swooper", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(1500, new BasicEnemy(130, 500, 200,false, "swooper", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(2000, new BasicEnemy(170, 800, 200,false, "track", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(2600, new BasicEnemy(60, 500, 300,false, "track", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(3000, new BasicEnemy(20, 500, 300,false, "basic", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"),this));
+        levelLayout.put(4000, new BasicEnemy(90, 800, 1500,false, "boss", new Dimension (200,200), getToolkit().getImage("images/basicEnemy.jpg"), this));
         //levelLayout.put(78, new BasicEnemy(1400, 50, 4500,false, "track", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg"), this));
 
        // levelLayout.put(400, makeEnemy(((int) (Math.random() * 1900)), 50, 4500,false, tick, "boss", new Dimension (200,200), getToolkit().getImage("images/bossEnemy.jpg")));
@@ -475,8 +496,21 @@ public class GamePanel extends JPanel implements ActionListener {
         //return ((b.x <= targetX && b.x+b.hitbox.width >= targetX) || (b.x+b.hitbox.width >= targetX+targetD.width && b.x <= targetX+targetD.width)) &&
         //        ((b.y <= targetY && b.y+b.hitbox.height >= targetY) || (b.y+b.hitbox.height >= targetY+targetD.height && b.y <= targetY+targetD.height));
 
-        return ((b.x >= targetX && b.x <= targetX+targetD.width) || (b.x+b.hitbox.width >= targetX && b.x+b.hitbox.width <= targetX+targetD.width)) &&
-                ((b.y >= targetY && b.y <= targetY+targetD.height) || (b.y+b.hitbox.height >= targetY && b.y+b.hitbox.height <= targetY+targetD.height));
+        return ((b.x >= targetX && b.x <= targetX + targetD.width || targetX >= b.x && targetX + targetD.width <= b.x) ||
+                (b.x + b.hitbox.width >= targetX && b.x + b.hitbox.width <= targetX + targetD.width || targetX >= b.x + b.hitbox.width && targetX + targetD.width <= b.x + b.hitbox.width)) &&
+                ((b.y >= targetY && b.y <= targetY + targetD.height || targetY >= b.y && targetY + targetD.height <= b.y) ||
+                        (b.y + b.hitbox.height >= targetY && b.y + b.hitbox.height <= targetY + targetD.height || targetY >= b.y + b.hitbox.height && targetY + targetD.height <= b.y + b.hitbox.height));
+    }
+
+    public boolean isHitEnemy(BasicEnemy e, double targetX, double targetY, Dimension targetD) {    // checks if an enemy hits a target
+
+        //return ((b.x <= targetX && b.x+b.hitbox.width >= targetX) || (b.x+b.hitbox.width >= targetX+targetD.width && b.x <= targetX+targetD.width)) &&
+        //        ((b.y <= targetY && b.y+b.hitbox.height >= targetY) || (b.y+b.hitbox.height >= targetY+targetD.height && b.y <= targetY+targetD.height));
+
+        return ((e.x >= targetX && e.x <= targetX + targetD.width || targetX >= e.x && targetX + targetD.width <= e.x) ||
+                (e.x + e.hitbox.width >= targetX && e.x + e.hitbox.width <= targetX + targetD.width || targetX >= e.x + e.hitbox.width && targetX + targetD.width <= e.x + e.hitbox.width)) &&
+                ((e.y >= targetY && e.y <= targetY + targetD.height || targetY >= e.y && targetY + targetD.height <= e.y) ||
+                        (e.y + e.hitbox.height >= targetY && e.y + e.hitbox.height <= targetY + targetD.height || targetY >= e.y + e.hitbox.height && targetY + targetD.height <= e.y + e.hitbox.height));
     }
 
     public void updateEnemies () {
@@ -501,6 +535,18 @@ public class GamePanel extends JPanel implements ActionListener {
                     basicBulletMap = e.swooper(tick, basicBulletMap, this);
                 } else if (e.name.equalsIgnoreCase("boss")) {
                     basicBulletMap = e.boss(tick, basicBulletMap, this);
+                } else if (e.name.equalsIgnoreCase("wall")) {
+                    basicBulletMap = e.wall(tick, basicBulletMap, this);
+                }
+            }
+
+            boolean hit;
+            hit = isHitEnemy(e, posXCollision, posYCollision, playerHitboxCollision);
+
+            if (hit) {
+                playerHealth = playerHealth - 10;
+                if (playerHealth <= 0) {
+                    playerDead = true;
                 }
             }
         }
@@ -554,7 +600,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
                 if (b.death < current || hit) {
                     if (hit) {
-                        playerHealth = playerHealth - b.damage;
+                       // playerHealth = playerHealth - b.damage;
                         if (playerHealth <= 0) {
                             playerDead = true;
                         }
@@ -627,6 +673,8 @@ public class GamePanel extends JPanel implements ActionListener {
         else if (mainmenu) {
             mainmenu = false;
             level1 = true;
+            menuClip.stop();
+            lv1Clip.start();
             inputEnemiesIntoMap();
         }
 
@@ -650,6 +698,7 @@ public class GamePanel extends JPanel implements ActionListener {
         root.getChildren().add(viewer);
 
         VFXPanel.setScene(scene);
+        player.setVolume(0.20);
         player.play();
         videoPanel.setLayout(new BorderLayout());
         videoPanel.add(VFXPanel, BorderLayout.CENTER);
